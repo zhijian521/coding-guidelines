@@ -1,89 +1,31 @@
-# Zhijian Blog
+# 前端开发规范
 
-基于 Astro 5 构建的个人博客，采用内容集合（Content Collections）管理 Markdown/MDX 文章，并提供标签索引、分类索引、文章详情目录、RSS 与 Sitemap。
+本规范用于统一团队前端开发方式。默认执行；确有例外时，在评审中说明原因。
 
-## 技术栈
+## 文档结构
 
-- Astro 5
-- TypeScript（strict）
-- Markdown/MDX（`@astrojs/mdx`）
-- RSS（`@astrojs/rss`）
-- Sitemap（`@astrojs/sitemap`）
+| 章节 | 文件 |
+|---|---|
+| 一、总则 | [docs/01-总则.md](docs/01-总则.md) |
+| 二、命名规范 | [docs/02-命名规范.md](docs/02-命名规范.md) |
+| 三、HTML 规范 | [docs/03-HTML规范.md](docs/03-HTML规范.md) |
+| 四、CSS 规范 | [docs/04-CSS规范.md](docs/04-CSS规范.md) |
+| 五、JavaScript 规范 | [docs/05-JavaScript规范.md](docs/05-JavaScript规范.md) |
+| 六、TypeScript 规范 | [docs/06-TypeScript规范.md](docs/06-TypeScript规范.md) |
+| 七、注释规范 | [docs/07-注释规范.md](docs/07-注释规范.md) |
+| 八、Vue 组件规范 | [docs/08-Vue组件规范.md](docs/08-Vue组件规范.md) |
+| 九、React 组件规范 | [docs/09-React组件规范.md](docs/09-React组件规范.md) |
+| 十、项目结构 | [docs/10-项目结构.md](docs/10-项目结构.md) |
+| 十一、Git 协作 | [docs/11-Git协作.md](docs/11-Git协作.md) |
+| 十二、工程化配置 | [docs/12-工程化配置.md](docs/12-工程化配置.md) |
+| 十三、接口规范 | [docs/13-接口规范.md](docs/13-接口规范.md) |
+| 十四、安全规范 | [docs/14-安全规范.md](docs/14-安全规范.md) |
+| 十五、性能规范 | [docs/15-性能规范.md](docs/15-性能规范.md) |
 
-## 本地开发
+## 完整版
 
-```bash
-npm install
-npm run dev
-```
+在线查看完整文档：[前端开发规范.html](前端开发规范.html)
 
-默认本地地址：`http://localhost:4321`
+## 版本
 
-## 可用命令
-
-- `npm run dev`：启动开发服务器
-- `npm run build`：生产构建到 `dist/`
-- `npm run preview`：预览构建产物
-- `npm run check`：执行 Astro 类型与内容检查
-- `npm run lint`：当前等价于 `npm run check`
-
-## 站点 URL 配置
-
-`astro.config.mjs` 使用 `SITE_URL` 环境变量作为优先站点地址，默认值为：
-
-- `https://home.yuwb.dev`
-
-如需在不同环境覆盖：
-
-```bash
-SITE_URL=https://your-domain.com npm run build
-```
-
-## 内容目录与路由
-
-文章源文件位于 `blog/` 目录，支持 `.md` 与 `.mdx`。
-
-- 文章详情：`/<id>`
-- 文章列表：`/blog/`
-- 标签索引：`/blog/tags/`
-- 标签详情：`/blog/tags/<tag>/`
-- 分类索引：`/blog/categories/`
-- 分类详情：`/blog/categories/<path>/`
-
-## Frontmatter 规范
-
-`src/content.config.ts` 对 `blog` 集合做了校验与字段归一化。
-
-建议至少包含：
-
-```yaml
----
-id: your-post-id
-title: 文章标题
-date: 2026-01-01
-category: 开发/前端
-tags:
-  - Astro
-  - TypeScript
-description: 文章摘要
----
-```
-
-其中：
-
-- `id` 必填，且将用于文章详情路由
-- `date` 或 `pubDate` 至少存在一个
-- `description` 为空时会回退到 `excerpt` 或 `title`
-
-## 项目结构
-
-```text
-src/
-  components/
-  layouts/
-  pages/
-  styles/
-  utils/
-blog/
-public/
-```
+v2.0 · 2026-05 · 团队内部文档

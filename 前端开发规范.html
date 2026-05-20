@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>前端开发规范</title>
+<style>
+  /* ============================================================
+     Design Tokens
+     ============================================================ */
+  :root {
+    --ink: #1a1a1a;
+    --ink2: #4a4a4a;
+    --ink3: #7a7a7a;
+    --paper: #fff;
+    --bg: #f5f4f0;
+    --rule: #e0ddd6;
+    --rule-light: #eeece6;
+    --accent: #b8730a;
+    --accent-light: #fdf6e8;
+    --code-bg: #f9f8f5;
+    --code-border: #e8e5de;
+    --sidebar-w: 220px;
+    --layout-max: 1240px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    --font-mono: "SF Mono", "Fira Code", "JetBrains Mono", "Consolas", "Monaco", monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 32px; }
+  body {
+    font-family: var(--font);
+    color: var(--ink);
+    line-height: 1.7;
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============================================================
+     Hero Cover
+     ============================================================ */
+  .hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #2a2620;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 50% 40% at 35% 50%, rgba(184,115,10,.12) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 50% at 75% 40%, rgba(255,255,255,.025) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 30% at 60% 80%, rgba(184,115,10,.06) 0%, transparent 50%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.012) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.012) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+  .hero-accent-top,
+  .hero-accent-bottom {
+    position: absolute; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(184,115,10,.25) 20%, rgba(184,115,10,.25) 80%, transparent);
+  }
+  .hero-accent-top { top: 12%; }
+  .hero-accent-bottom { bottom: 12%; }
+  .hero-accent-left,
+  .hero-accent-right {
+    position: absolute; top: 12%; bottom: 12%; width: 1px;
+    background: linear-gradient(180deg, rgba(184,115,10,.25), transparent 30%, transparent 70%, rgba(184,115,10,.25));
+  }
+  .hero-accent-left { left: 12%; }
+  .hero-accent-right { right: 12%; }
+  .hero-corner {
+    position: absolute;
+    width: 20px; height: 20px;
+    border-color: rgba(184,115,10,.35);
+    border-style: solid;
+  }
+  .hero-corner-tl { top: 12%; left: 12%; border-width: 1px 0 0 1px; }
+  .hero-corner-tr { top: 12%; right: 12%; border-width: 1px 1px 0 0; }
+  .hero-corner-bl { bottom: 12%; left: 12%; border-width: 0 0 1px 1px; }
+  .hero-corner-br { bottom: 12%; right: 12%; border-width: 0 1px 1px 0; }
+
+  .hero-inner { position: relative; z-index: 2; }
+  .hero-bracket {
+    font-family: "Georgia", "Noto Serif SC", serif;
+    font-size: 140px;
+    font-weight: 300;
+    color: rgba(184,115,10,.08);
+    line-height: 0;
+    margin-bottom: -24px;
+    user-select: none;
+    letter-spacing: -0.04em;
+  }
+  .hero h1 {
+    font-size: 64px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    margin-bottom: 20px;
+    line-height: 1.1;
+  }
+  .hero h1 i {
+    font-style: normal;
+    color: #d4a017;
+    position: relative;
+  }
+  .hero h1 i::after {
+    content: '';
+    position: absolute; bottom: 2px; left: 0; right: 0;
+    height: 3px;
+    background: rgba(212,160,23,.3);
+    border-radius: 2px;
+  }
+  .hero .hero-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,.35);
+    margin-bottom: 56px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .hero .hero-rule {
+    width: 40px; height: 1px;
+    background: rgba(184,115,10,.25);
+    margin: 0 auto 44px;
+  }
+  .hero .hero-meta {
+    font-size: 11px;
+    color: rgba(255,255,255,.28);
+    display: flex; gap: 36px; justify-content: center;
+    letter-spacing: 0.08em;
+  }
+  .hero .hero-meta span {
+    position: relative;
+  }
+  .hero .hero-meta span + span::before {
+    content: '';
+    position: absolute; left: -18px; top: 50%;
+    width: 3px; height: 3px;
+    background: rgba(184,115,10,.3);
+    border-radius: 50%;
+    transform: translateY(-50%);
+  }
+  .hero .scroll-hint {
+    position: absolute; bottom: 52px; left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,.14);
+    font-size: 10px; letter-spacing: 0.14em;
+    animation: float 2.6s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateX(-50%) translateY(0); opacity: .14; }
+    50% { transform: translateX(-50%) translateY(10px); opacity: .35; }
+  }
+
+  /* ============================================================
+     Layout
+     ============================================================ */
+  .layout {
+    display: flex;
+    max-width: var(--layout-max);
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+
+  /* ============================================================
+     Sidebar
+     ============================================================ */
+  .sidebar {
+    position: sticky; top: 0;
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    height: 100vh;
+    padding: 40px 24px;
+    border-right: 1px solid var(--rule-light);
+    overflow-y: auto;
+    background: var(--paper);
+  }
+  .sidebar-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .sidebar-ver {
+    font-size: 11px;
+    color: var(--ink3);
+    margin: 4px 0 6px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .sidebar a {
+    display: block;
+    padding: 5px 10px;
+    margin: 1px 0;
+    font-size: 13px;
+    color: var(--ink2);
+    text-decoration: none;
+    border-radius: 3px;
+    transition: background .1s, color .1s;
+  }
+  .sidebar a:hover { background: #f5f4f0; color: var(--ink); }
+  .sidebar a.active {
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ============================================================
+     Main Content
+     ============================================================ */
+  .main {
+    flex: 1; min-width: 0;
+    padding: 48px 64px 96px;
+    background: var(--paper);
+  }
+
+  /* ============================================================
+     Inline Cover
+     ============================================================ */
+  .cover {
+    padding: 20px 0 32px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .cover h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .cover p {
+    margin-top: 8px;
+    color: var(--ink3);
+    font-size: 14px;
+  }
+
+  /* ============================================================
+     Headings
+     ============================================================ */
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 44px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+    letter-spacing: -0.01em;
+  }
+  h2 .num {
+    display: inline-block;
+    font-size: 13px;
+    color: var(--accent);
+    margin-right: 10px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    vertical-align: middle;
+    margin-top: -2px;
+  }
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 32px 0 14px;
+  }
+  h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 22px 0 8px;
+    color: var(--ink2);
+  }
+
+  /* ============================================================
+     Paragraphs & Lists
+     ============================================================ */
+  p { margin-bottom: 14px; color: var(--ink2); font-size: 14px; }
+  ul, ol { margin: 8px 0 16px 22px; color: var(--ink2); font-size: 14px; }
+  li { margin-bottom: 5px; }
+  li p { margin-bottom: 4px; }
+
+  /* ============================================================
+     Tables
+     ============================================================ */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 13px;
+  }
+  th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--ink3);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 10px 14px;
+    background: #faf9f7;
+    border-bottom: 1px solid var(--rule);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule-light);
+    color: var(--ink2);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  /* ============================================================
+     Code Blocks
+     ============================================================ */
+  .code-block {
+    margin: 16px 0 24px;
+    border: 1px solid var(--code-border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .code-block .lang {
+    padding: 6px 16px;
+    font-size: 10px;
+    color: var(--ink3);
+    background: #faf9f7;
+    border-bottom: 1px solid var(--code-border);
+    font-family: var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .code-block pre {
+    margin: 0;
+    padding: 18px 20px;
+    background: var(--code-bg);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.75;
+    color: #38342e;
+    tab-size: 2;
+  }
+  .code-block pre code { font-family: inherit; }
+
+  /* Syntax */
+  .kw { color: #825e09; } .str { color: #854d0e; } .num { color: #2d6a4f; }
+  .cm { color: #999; font-style: italic; } .fn { color: #6b4e9e; }
+  .ty { color: #825e09; } .pp { color: #8250df; } .pl { color: #38342e; }
+  .at { color: #825e09; } .nt { color: #2d6a4f; } .cp { color: #999; }
+  .c { color: #999; font-style: italic; } .no { color: #825e09; }
+
+  /* Inline code */
+  :not(pre) > code {
+    background: #f3f1ec;
+    color: #854d0e;
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+  }
+
+  /* ============================================================
+     Notes
+     ============================================================ */
+  .note {
+    border-left: 2px solid var(--accent);
+    padding: 12px 18px;
+    margin: 16px 0 24px;
+    background: var(--accent-light);
+    font-size: 13px;
+    color: var(--ink2);
+    border-radius: 0 3px 3px 0;
+    line-height: 1.65;
+  }
+  .note strong { color: var(--ink); }
+  .note code { background: #ede6d8; }
+
+  /* ============================================================
+     Compare (Good vs Bad)
+     ============================================================ */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0 24px;
+  }
+  .compare > div {
+    border: 1px solid var(--rule-light);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .compare .label {
+    padding: 6px 16px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--rule-light);
+  }
+  .compare .bad .label { background: #fef2f2; color: #991b1b; }
+  .compare .good .label { background: #f0fdf4; color: #14532d; }
+  .compare pre {
+    margin: 0; padding: 14px 16px; background: #faf9f7;
+    font-size: 13px; line-height: 1.7; border: 0; border-radius: 0;
+  }
+
+  /* ============================================================
+     Rule Summary Cards
+     ============================================================ */
+  .rule-card {
+    border: 1px solid var(--rule-light);
+    border-radius: 4px;
+    padding: 18px 22px;
+    margin: 16px 0 24px;
+    background: #faf9f7;
+  }
+  .rule-card h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .rule-card p {
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .rule-card p:last-child { margin-bottom: 0; }
+
+  /* ============================================================
+     Footer
+     ============================================================ */
+  .footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    font-size: 12px;
+    color: var(--ink3);
+    line-height: 1.8;
+  }
+
+  /* ============================================================
+     Responsive
+     ============================================================ */
+  @media (max-width: 1000px) {
+    .layout { flex-direction: column; }
+    .sidebar {
+      position: static;
+      width: 100%; min-width: auto; height: auto;
+      padding: 20px 24px;
+      border-right: none;
+      border-bottom: 1px solid var(--rule-light);
+    }
+    .main { padding: 32px 24px; }
+    .compare { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    .hero, .sidebar { display: none; }
+    .layout { max-width: none; }
+    .main { padding: 0; }
+    .code-block { break-inside: avoid; border: 1px solid #ddd; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HERO COVER
+     ============================================================ -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-accent-top"></div>
+  <div class="hero-accent-bottom"></div>
+  <div class="hero-accent-left"></div>
+  <div class="hero-accent-right"></div>
+  <div class="hero-corner hero-corner-tl"></div>
+  <div class="hero-corner hero-corner-tr"></div>
+  <div class="hero-corner hero-corner-bl"></div>
+  <div class="hero-corner hero-corner-br"></div>
+  <div class="hero-inner">
+    <div class="hero-bracket">{ }</div>
+    <h1>前端开发<i>规范</i></h1>
+    <p class="hero-sub">Frontend Development Specification</p>
+    <div class="hero-rule"></div>
+    <div class="hero-meta">
+      <span>2026-05</span>
+      <span>v2.0</span>
+      <span>团队协作基准</span>
+    </div>
+  </div>
+  <div class="scroll-hint">向 下 浏 览</div>
+</section>
+
+<div class="layout">
+
+<!-- ============================================================
+     SIDEBAR
+     ============================================================ -->
+<aside class="sidebar">
+  <div class="sidebar-title">前端开发规范</div>
+  <div class="sidebar-ver">v2.0 · 2026-05</div>
+  <a href="#cover">封面</a>
+  <a href="#ch1">一、总则</a>
+  <a href="#ch2">二、命名规范</a>
+  <a href="#ch3">三、HTML 规范</a>
+  <a href="#ch4">四、CSS 规范</a>
+  <a href="#ch5">五、JavaScript 规范</a>
+  <a href="#ch6">六、TypeScript 规范</a>
+  <a href="#ch7">七、注释规范</a>
+  <a href="#ch8">八、Vue 组件规范</a>
+  <a href="#ch9">九、React 组件规范</a>
+  <a href="#ch10">十、项目结构</a>
+  <a href="#ch11">十一、Git 协作</a>
+  <a href="#ch12">十二、工程化配置</a>
+  <a href="#ch13">十三、接口规范</a>
+  <a href="#ch14">十四、安全规范</a>
+  <a href="#ch15">十五、性能规范</a>
+</aside>
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<main class="main">
+
+<!-- Cover -->
+<div class="cover" id="cover">
+  <h1>前端开发规范</h1>
+  <p>本规范用于统一团队前端开发方式。默认执行；确有例外时，在评审中说明原因。</p>
+</div>
+
+<!-- ============================================================
+     Ch1: 总则
+     ============================================================ -->
+<h2 id="ch1">一、总则</h2>
+
+<h3>1.1 适用范围</h3>
+<ul>
+  <li>Web 前端项目</li>
+  <li>Vue / React 项目</li>
+  <li>JavaScript / TypeScript 项目</li>
+  <li>页面开发、组件开发、重构、联调、代码评审</li>
+</ul>
+<p>新项目从一开始就按这套规范走。老项目不要求一次性改完，但每次改到相关模块时顺手对齐。规范冲突时，以本文档为准——如果确实有更好的做法，在 Code Review 里说明理由即可。</p>
+
+<h3>1.2 核心原则</h3>
+
+<div class="rule-card">
+  <h4>可读优先</h4>
+  <p>代码是写给人看的，顺便让机器执行。如果你写完三个月后自己都读不懂，那这段代码就有问题。变量名、函数名必须说清楚自己是干什么的，<code>data</code>、<code>temp</code>、<code>item1</code> 这种名字一律不给过。</p>
+</div>
+
+<div class="rule-card">
+  <h4>一致至上</h4>
+  <p>项目里所有代码应该像同一个人写的。缩进用 2 空格还是 4 空格不重要，重要的是别一个文件 2 空格、另一个文件 Tab。新加入的同事能快速上手，不会因为风格不一致浪费时间。</p>
+</div>
+
+<div class="rule-card">
+  <h4>极简原则</h4>
+  <p>没用的代码直接删掉，包括注释掉的旧代码、废弃的分支逻辑、写了但没人调的函数。不要因为"以后可能用得上"留着——Git 历史能找回来。也别为了"设计模式"引入不必要的抽象层，一个页面才 200 行代码，不需要拆 5 层。</p>
+</div>
+
+<div class="rule-card">
+  <h4>渐进收敛</h4>
+  <p>新项目严格按规范来。老项目每次改到相关模块时顺便对齐，不要让"历史遗留"成为永远的借口。半年后回头看，大部分代码应该已经收敛了。</p>
+</div>
+
+<h3>1.3 禁止项</h3>
+<ul>
+  <li>为了"看起来高级"引入不必要的抽象</li>
+  <li>简单需求拆出过多文件和中间层</li>
+  <li>临时方案（workaround）长期留在线上代码中</li>
+  <li>复制旧代码后只改局部变量名，保留无用的冗余结构</li>
+</ul>
+
+<div class="note">
+  <strong>实际场景：</strong>见过一个表单页面，总共 3 个输入框，被拆了 8 个组件、4 个 composable、2 个 store 模块。后来要改一个校验逻辑，得在 6 个文件之间跳来跳去。这不是工程化，这是过度设计。
+</div>
+
+<h3>1.4 文档使用说明</h3>
+<p>规范发生冲突时，以本文档为准；确有更好的做法，在 MR 中说明理由即可。规范本身也会持续迭代——如果你发现某条规则在项目中反复被绕过，说明规则本身需要讨论修改，提 issue 或团队周会讨论。</p>
+
+<!-- ============================================================
+     Ch2: 命名规范
+     ============================================================ -->
+<h2 id="ch2">二、命名规范</h2>
+
+<p>命名的核心就一条：<strong>让读代码的人不需要查注释就知道这个变量是干什么的</strong>。名称长一点没关系，现代编辑器都有自动补全。名称短但让人猜才是问题。</p>
+
+<h3>2.1 项目与目录</h3>
+<table>
+  <tr><th>类别</th><th>规则</th><th>示例</th></tr>
+  <tr><td>项目名</td><td>全小写 + 中划线分隔</td><td><code>my-project</code></td></tr>
+  <tr><td>目录名</td><td>全小写 + 中划线，复数用复数</td><td><code>components</code>、<code>utils</code></td></tr>
+  <tr><td>组件目录</td><td>kebab-case</td><td><code>user-profile</code></td></tr>
+</table>
+<p>为什么统一小写+中划线？因为 Git 在大小写不敏感的系统上（比如 macOS 默认）容易出问题，中划线比下划线更易读，而且 npm 包名也是这个规范。</p>
+
+<h3>2.2 文件</h3>
+<table>
+  <tr><th>类型</th><th>规则</th><th>示例</th></tr>
+  <tr><td>JS / TS 工具</td><td>kebab-case</td><td><code>date-formatter.ts</code></td></tr>
+  <tr><td>Vue 组件</td><td>PascalCase 或 kebab-case</td><td><code>UserCard.vue</code></td></tr>
+  <tr><td>React 组件</td><td>PascalCase，<code>.tsx</code></td><td><code>UserCard.tsx</code></td></tr>
+  <tr><td>CSS / SCSS</td><td>kebab-case</td><td><code>user-card.module.scss</code></td></tr>
+</table>
+<p>注意：组件文件和组件名保持一致。如果一个组件叫 <code>UserCard</code>，文件名必须是 <code>UserCard.vue</code> 或 <code>UserCard.tsx</code>，不要叫 <code>user-card.vue</code>。例外是 Vue 项目里用 <code>index.vue</code> 作为目录默认入口的情况，但组件外的引用路径仍是 PascalCase 的目录名。</p>
+
+<h3>2.3 变量与函数</h3>
+<div class="code-block">
+  <div class="lang">TypeScript</div>
+<pre><code><span class="cm">// 变量：小驼峰 (lowerCamelCase)</span>
+<span class="kw">const</span> <span class="pl">userName</span> = <span class="str">'Alice'</span>;
+<span class="kw">const</span> <span class="pl">orderList</span> = [];
+
+<span class="cm">// 常量：全大写 + 下划线</span>
+<span class="kw">const</span> <span class="pl">MAX_SIZE</span> = <span class="num">100</span>;
+<span class="kw">const</span> <span class="pl">API_BASE_URL</span> = <span class="str">'https://api.example.com'</span>;
+
+<span class="cm">// 函数：动词 + 名词</span>
+<span class="kw">function</span> <span class="fn">getUserInfo</span>(<span class="pl">userId</span>: <span class="ty">string</span>) {}
+<span class="kw">function</span> <span class="fn">handleSubmit</span>() {}
+
+<span class="cm">// 布尔值：is / has / can 前缀</span>
+<span class="kw">const</span> <span class="pl">isLoading</span> = <span class="kw">true</span>;
+<span class="kw">const</span> <span class="pl">hasPermission</span> = <span class="kw">false</span>;
+
+<span class="cm">// 类 / 接口 / 类型：大驼峰 (UpperCamelCase)</span>
+<span class="kw">class</span> <span class="ty">UserController</span> {}
+<span class="kw">interface</span> <span class="ty">UserProfile</span> {}
+<span class="kw">type</span> <span class="ty">OrderStatus</span> = <span class="str">'pending'</span> | <span class="str">'completed'</span>;
+
+<span class="cm">// 私有属性：下划线前缀</span>
+<span class="kw">class</span> <span class="ty">Store</span> {
+  <span class="kw">private</span> <span class="pl">_cache</span>: <span class="ty">Map</span>&lt;<span class="ty">string</span>, <span class="kw">unknown</span>&gt;;
+}</code></pre>
+</div>
+
+<h3>2.4 命名对比</h3>
+<div class="compare">
+  <div class="bad">
+    <div class="label">不推荐</div>
+<pre><code><span class="cm">// 无意义名称</span>
+<span class="kw">const</span> <span class="pl">d</span> = <span class="kw">new</span> <span class="ty">Date</span>();
+<span class="kw">function</span> <span class="fn">fn</span>() {}
+
+<span class="cm">// 拼音</span>
+<span class="kw">const</span> <span class="pl">yonghuMing</span> = <span class="str">''</span>;
+
+<span class="cm">// 魔法数字</span>
+<span class="kw">if</span> (status === <span class="num">1</span>) {}</code></pre>
+  </div>
+  <div class="good">
+    <div class="label">推荐</div>
+<pre><code><span class="cm">// 语义化</span>
+<span class="kw">const</span> <span class="pl">currentDate</span> = <span class="kw">new</span> <span class="ty">Date</span>();
+<span class="kw">function</span> <span class="fn">calculateTotal</span>() {}
+
+<span class="cm">// 英文</span>
+<span class="kw">const</span> <span class="pl">userName</span> = <span class="str">''</span>;
+
+<span class="cm">// 语义化常量</span>
+<span class="kw">if</span> (status === <span class="ty">OrderStatus</span>.<span class="pp">Pending</span>) {}</code></pre>
+  </div>
+</div>
+
+<h3>2.5 事件与路由命名</h3>
+<table>
+  <tr><th>场景</th><th>规则</th><th>示例</th></tr>
+  <tr><td>事件处理函数</td><td><code>handle</code> + 事件名</td><td><code>handleClick</code>、<code>handleSubmit</code></td></tr>
+  <tr><td>事件回调 prop</td><td><code>on</code> + 事件名（传给组件）</td><td><code>onClick</code>、<code>onChange</code></td></tr>
+  <tr><td>路由 path</td><td>kebab-case</td><td><code>/user-profile</code>、<code>/order-detail</code></td></tr>
+  <tr><td>路由 name</td><td>camelCase</td><td><code>userProfile</code>、<code>orderDetail</code></td></tr>
+  <tr><td>枚举 key</td><td>PascalCase</td><td><code>OrderStatus.Pending</code></td></tr>
+  <tr><td>枚举 value</td><td>UPPER_SNAKE_CASE</td><td><code>'PENDING'</code>、<code>'SHIPPED'</code></td></tr>
+</table>
+
+<h3>2.6 缩写词处理</h3>
+<p>业界常见的缩写词（如 URL、API、XML、JSON）在命名中保持原样：<code>URLParser</code>、<code>XMLHttpRequest</code>、<code>parseJSON</code>（小驼峰中后置则首字母大写）。自己发明的缩写一律不可以用——<code>usrNm</code>、<code>btnClk</code> 这种写法省不了几个字符，但读起来要花几秒解码。</p>
+
+<div class="note">
+  <strong>团队共识：</strong>不要用拼音，也不要用自造缩写（比如 <code>usrNm</code>）。新同事加入时看代码应该是自然阅读的感觉，不是在解密。
+</div>
+
+<!-- ============================================================
+     Ch3: HTML 规范
+     ============================================================ -->
+<h2 id="ch3">三、HTML 规范</h2>
+
+<p>HTML 是页面的骨架。写 HTML 时记住两点：<strong>语义化</strong>（让标签本身描述内容的含义）和<strong>可访问性</strong>（让屏幕阅读器和搜索引擎能正确理解页面结构）。</p>
+
+<h3>3.1 基本模板</h3>
+<p>每个 HTML 页面从这个模板开始。注意 <code>lang</code> 属性和 viewport 设置——这两个缺了会影响可访问性和移动端显示。</p>
+<div class="code-block">
+  <div class="lang">HTML</div>
+<pre><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">"zh-CN"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+  <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"UTF-8"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">"X-UA-Compatible"</span> <span class="na">content=</span><span class="s">"IE=edge"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">"viewport"</span> <span class="na">content=</span><span class="s">"width=device-width, initial-scale=1.0"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">"description"</span> <span class="na">content=</span><span class="s">"页面描述"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;title&gt;</span>页面标题<span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span></code></pre>
+</div>
+
+<h3>3.2 规范要点</h3>
+<table>
+  <tr><th style="width:22%">项</th><th>要求</th><th>原因</th></tr>
+  <tr><td>DOCTYPE</td><td><code>&lt;!DOCTYPE html&gt;</code></td><td>告诉浏览器用标准模式渲染，不用这个会触发怪异模式</td></tr>
+  <tr><td>编码</td><td>UTF-8</td><td>统一编码，避免中文乱码</td></tr>
+  <tr><td>语义化</td><td><code>&lt;header&gt;</code> <code>&lt;nav&gt;</code> <code>&lt;main&gt;</code> <code>&lt;footer&gt;</code></td><td>不要全用 <code>&lt;div&gt;</code>。搜索引擎和读屏软件依赖标签理解页面结构</td></tr>
+  <tr><td>属性引号</td><td>双引号</td><td>统一风格，避免属性值含空格时解析错误</td></tr>
+  <tr><td>标签闭合</td><td>不要省略可选关闭标签</td><td><code>&lt;li&gt;</code> <code>&lt;p&gt;</code> 等标签虽然可以省略闭合，但写了更容易阅读和 diff</td></tr>
+  <tr><td>缩进</td><td>2 空格</td><td>嵌套结构一目了然</td></tr>
+  <tr><td>内联样式</td><td>禁止</td><td>样式应通过 class 控制，内联样式难以维护和覆盖</td></tr>
+  <tr><td><code>target="_blank"</code></td><td>加 <code>rel="noopener noreferrer"</code></td><td>防止新页面通过 <code>window.opener</code> 操作原页面，是安全漏洞</td></tr>
+  <tr><td>图片</td><td>必须写 <code>alt</code> 属性</td><td>图片加载失败或读屏时提供文字说明</td></tr>
+</table>
+
+<h3>3.3 属性书写顺序</h3>
+<p>属性按以下顺序写，这样一眼就能找到关键属性：</p>
+<ol>
+  <li><code>class</code> — 样式相关，最常修改</li>
+  <li><code>id</code> — 尽量少用</li>
+  <li><code>name</code>、<code>data-*</code></li>
+  <li><code>src</code>、<code>type</code>、<code>href</code>、<code>value</code></li>
+  <li><code>placeholder</code>、<code>title</code>、<code>alt</code></li>
+  <li><code>aria-*</code>、<code>role</code></li>
+  <li><code>required</code>、<code>readonly</code>、<code>disabled</code></li>
+</ol>
+
+<h3>3.4 表单元素</h3>
+<table>
+  <tr><th>项</th><th>要求</th><th>原因</th></tr>
+  <tr><td>label 关联</td><td>每个 input 必须有 <code>&lt;label&gt;</code> 或 <code>aria-label</code></td><td>点击 label 自动聚焦 input，读屏软件读出字段名</td></tr>
+  <tr><td>autocomplete</td><td>使用标准值如 <code>email</code> <code>tel</code> <code>name</code></td><td>浏览器自动填充，减少用户输入</td></tr>
+  <tr><td>input type</td><td>用语义化 type：<code>email</code> <code>tel</code> <code>number</code> <code>date</code></td><td>移动端弹出正确键盘，自带格式校验</td></tr>
+  <tr><td>required</td><td>必填字段加 <code>required</code> 属性 + 视觉标识</td><td>浏览器原生校验 + 无障碍提示</td></tr>
+</table>
+
+<h3>3.5 图片规范</h3>
+<div class="code-block">
+  <div class="lang">HTML</div>
+<pre><code><span class="cm">&lt;!-- 响应式图片：不同屏幕加载不同尺寸 --&gt;</span>
+<span class="nt">&lt;img</span>
+  <span class="na">srcset=</span><span class="s">"img-480.jpg 480w, img-800.jpg 800w, img-1200.jpg 1200w"</span>
+  <span class="na">sizes=</span><span class="s">"(max-width: 600px) 480px, (max-width: 1000px) 800px, 1200px"</span>
+  <span class="na">src=</span><span class="s">"img-800.jpg"</span>
+  <span class="na">alt=</span><span class="s">"产品图片"</span>
+  <span class="na">loading=</span><span class="s">"lazy"</span>
+  <span class="nt">/&gt;</span>
+
+<span class="cm">&lt;!-- 现代格式优先，降级兼容 --&gt;</span>
+<span class="nt">&lt;picture&gt;</span>
+  <span class="nt">&lt;source</span> <span class="na">srcset=</span><span class="s">"img.webp"</span> <span class="na">type=</span><span class="s">"image/webp"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;source</span> <span class="na">srcset=</span><span class="s">"img.avif"</span> <span class="na">type=</span><span class="s">"image/avif"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"img.jpg"</span> <span class="na">alt=</span><span class="s">""</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/picture&gt;</span></code></pre>
+</div>
+
+<h3>3.6 资源预加载</h3>
+<p>关键资源（首屏字体、Hero 图片、核心 CSS）用 preload 提前加载；下一页可能用到的资源用 prefetch 空闲时加载；第三方域名用 dns-prefetch 或 preconnect 提前解析 DNS。</p>
+<div class="code-block">
+  <div class="lang">HTML</div>
+<pre><code><span class="cm">&lt;!-- 关键字体预加载 --&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"preload"</span> <span class="na">href=</span><span class="s">"/fonts/main.woff2"</span> <span class="na">as=</span><span class="s">"font"</span> <span class="na">crossorigin</span><span class="nt">&gt;</span>
+
+<span class="cm">&lt;!-- 下一页预取 --&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"prefetch"</span> <span class="na">href=</span><span class="s">"/page-2.js"</span><span class="nt">&gt;</span>
+
+<span class="cm">&lt;!-- 第三方域名预连接 --&gt;</span>
+<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"preconnect"</span> <span class="na">href=</span><span class="s">"https://api.example.com"</span><span class="nt">&gt;</span></code></pre>
+</div>
+
+<h3>3.7 iframe 与嵌入内容</h3>
+<table>
+  <tr><th>项</th><th>要求</th></tr>
+  <tr><td>安全</td><td>必须加 <code>sandbox</code> 属性，限制 iframe 权限</td></tr>
+  <tr><td>加载</td><td>加 <code>loading="lazy"</code> 延迟加载</td></tr>
+  <tr><td>无障碍</td><td>加 <code>title</code> 属性描述 iframe 内容</td></tr>
+  <tr><td>尺寸</td><td>明确设置宽高，避免布局偏移 (CLS)</td></tr>
+</table>
+
+<!-- ============================================================
+     Ch4: CSS 规范
+     ============================================================ -->
+<h2 id="ch4">四、CSS 规范</h2>
+
+<p>CSS 容易写乱，因为它的作用域是全局的。核心原则：<strong>样式要有明确的作用范围</strong>，改一个地方的样式不应该意外影响另一个地方。</p>
+
+<h3>4.1 BEM 命名</h3>
+<p>BEM 把类名分成三层：<strong>Block</strong>（独立组件）、<strong>Element</strong>（组件内部元素）、<strong>Modifier</strong>（变体）。用 <code>__</code> 连接元素，<code>--</code> 连接变体。</p>
+<div class="code-block">
+  <div class="lang">CSS</div>
+<pre><code><span class="cm">/* Block — 独立的组件 */</span>
+<span class="pl">.card</span> {}
+
+<span class="cm">/* Element — 组件内部的子元素，用 __ 连接 */</span>
+<span class="pl">.card__title</span> {}
+<span class="pl">.card__body</span> {}
+<span class="pl">.card__footer</span> {}
+
+<span class="cm">/* Modifier — 组件的变体或状态，用 -- 连接 */</span>
+<span class="pl">.card--featured</span> { <span class="cm">/* 特别推荐的卡片 */</span> }
+<span class="pl">.card__title--large</span> { <span class="cm">/* 大号标题 */</span> }
+
+<span class="cm">/* 状态类 — 用 is- / has- 前缀 */</span>
+<span class="pl">.is-active</span> {}
+<span class="pl">.has-error</span> {}
+<span class="pl">.is-disabled</span> {}</code></pre>
+</div>
+<p>如果项目中用了 CSS Modules 或 scoped styles（Vue），BEM 就不是必须的——类名冲突已经被工具解决了。但如果写全局样式，BEM 仍然是避免命名冲突最有效的方式。</p>
+
+<h3>4.2 书写规范</h3>
+<table>
+  <tr><th style="width:22%">项</th><th>要求</th></tr>
+  <tr><td>缩进</td><td>2 空格</td></tr>
+  <tr><td>选择器与 <code>{</code></td><td>保留一个空格</td></tr>
+  <tr><td>属性声明</td><td>每行一个，末尾加分号</td></tr>
+  <tr><td>零值</td><td>不加单位：<code>margin: 0</code> 而非 <code>margin: 0px</code></td></tr>
+  <tr><td>颜色</td><td>小写，能简写就简写：<code>#fff</code> 而非 <code>#FFFFFF</code></td></tr>
+  <tr><td><code>!important</code></td><td>禁止。用优先级覆盖，不要用 <code>!important</code> 暴力解决</td></tr>
+  <tr><td>ID 选择器</td><td>避免使用。ID 权重太高，后面很难覆盖</td></tr>
+  <tr><td>SCSS 嵌套</td><td>不超过 3 层。嵌套太深生成的 CSS 选择器很长，性能差且难覆盖</td></tr>
+</table>
+
+<div class="code-block">
+  <div class="lang">CSS</div>
+<pre><code><span class="pl">.card</span> {
+  <span class="pp">display</span>: <span class="pp">flex</span>;
+  <span class="pp">flex-direction</span>: <span class="pp">column</span>;
+  <span class="pp">padding</span>: <span class="num">16</span><span class="kw">px</span>;
+  <span class="pp">margin</span>: <span class="num">0</span>;
+  <span class="pp">background-color</span>: <span class="no">#fff</span>;
+  <span class="pp">border</span>: <span class="num">1</span><span class="kw">px</span> <span class="pp">solid</span> <span class="no">#e0e0e0</span>;
+  <span class="pp">border-radius</span>: <span class="num">8</span><span class="kw">px</span>;
+  <span class="pp">transition</span>: <span class="pp">box-shadow</span> <span class="num">.3</span><span class="kw">s</span> <span class="pp">ease</span>;
+}
+
+<span class="pl">.card:hover</span> {
+  <span class="pp">box-shadow</span>: <span class="num">0</span> <span class="num">4</span><span class="kw">px</span> <span class="num">12</span><span class="kw">px</span> <span class="kw">rgba</span>(<span class="num">0</span>, <span class="num">0</span>, <span class="num">0</span>, <span class="num">.1</span>);
+}</code></pre>
+</div>
+
+<h3>4.3 响应式断点</h3>
+<p>用 Mobile First 策略：先写移动端样式，再用 <code>min-width</code> 逐层覆盖更大屏幕。</p>
+<div class="code-block">
+  <div class="lang">CSS</div>
+<pre><code><span class="cm">/* 移动端样式写在外面，不需要媒体查询 */</span>
+
+<span class="cm">/* ≥ 576px：小型平板 */</span>
+<span class="at">@media</span> (<span class="pp">min-width</span>: <span class="num">576</span><span class="kw">px</span>) {}
+
+<span class="cm">/* ≥ 768px：平板 */</span>
+<span class="at">@media</span> (<span class="pp">min-width</span>: <span class="num">768</span><span class="kw">px</span>) {}
+
+<span class="cm">/* ≥ 992px：桌面端 */</span>
+<span class="at">@media</span> (<span class="pp">min-width</span>: <span class="num">992</span><span class="kw">px</span>) {}
+
+<span class="cm">/* ≥ 1200px：大屏 */</span>
+<span class="at">@media</span> (<span class="pp">min-width</span>: <span class="num">1200</span><span class="kw">px</span>) {}</code></pre>
+</div>
+
+<div class="note">
+  <strong>提醒：</strong>浏览器默认字体大小是 16px。如果你在 <code>html</code> 上设置了 <code>font-size: 62.5%</code>（让 1rem = 10px），记得这只是为了方便计算，不要依赖这个 hack——部分用户会修改浏览器默认字体大小，你的页面应该能适应。
+</div>
+
+<h3>4.4 CSS 变量与设计令牌</h3>
+<p>项目中的颜色、间距、字号等视觉属性统一用 CSS 变量管理，定义在 <code>:root</code> 中。变量名用 <code>--{类别}-{属性}</code> 格式。</p>
+<div class="code-block">
+  <div class="lang">CSS</div>
+<pre><code><span class="pl">:root</span> {
+  <span class="cm">/* 颜色 */</span>
+  <span class="pp">--color-primary</span>: <span class="no">#06c</span>;
+  <span class="pp">--color-text</span>: <span class="no">#1a1a1a</span>;
+  <span class="pp">--color-border</span>: <span class="no">#e0e0e0</span>;
+
+  <span class="cm">/* 间距 */</span>
+  <span class="pp">--space-xs</span>: <span class="num">4</span><span class="kw">px</span>;
+  <span class="pp">--space-sm</span>: <span class="num">8</span><span class="kw">px</span>;
+  <span class="pp">--space-md</span>: <span class="num">16</span><span class="kw">px</span>;
+  <span class="pp">--space-lg</span>: <span class="num">24</span><span class="kw">px</span>;
+
+  <span class="cm">/* 字体 */</span>
+  <span class="pp">--font-size-sm</span>: <span class="num">12</span><span class="kw">px</span>;
+  <span class="pp">--font-size-base</span>: <span class="num">14</span><span class="kw">px</span>;
+  <span class="pp">--font-size-lg</span>: <span class="num">18</span><span class="kw">px</span>;
+}</code></pre>
+</div>
+
+<h3>4.5 z-index 管理</h3>
+<p>z-index 很容易失控——每个组件随便写一个数字，最后谁也覆盖不了谁。约定好层级范围，全员遵守：</p>
+<table>
+  <tr><th>层级</th><th>范围</th><th>举例</th></tr>
+  <tr><td>内容层</td><td>0 – 99</td><td>普通元素、卡片、列表</td></tr>
+  <tr><td>浮层</td><td>100 – 199</td><td>Dropdown、Tooltip、Popover</td></tr>
+  <tr><td>遮罩层</td><td>200 – 299</td><td>Modal 遮罩、Drawer 遮罩</td></tr>
+  <tr><td>弹窗层</td><td>300 – 399</td><td>Modal、Drawer 内容</td></tr>
+  <tr><td>通知层</td><td>400 – 499</td><td>Toast、Notification、全局 Loading</td></tr>
+</table>
+
+<h3>4.6 动画规范</h3>
+<ul>
+  <li>动画只用 <code>transform</code> 和 <code>opacity</code>——它们不触发重排，性能最好</li>
+  <li>避免用 <code>width</code> <code>height</code> <code>top</code> <code>left</code> 做动画</li>
+  <li>必须支持 <code>prefers-reduced-motion</code>：用户开启了"减少动效"时，禁用或简化动画</li>
+</ul>
+
+<h3>4.7 字体加载与打印</h3>
+<table>
+  <tr><th>项</th><th>要求</th></tr>
+  <tr><td>font-display</td><td>Web 字体必须设置 <code>font-display: swap</code>，避免 FOIT（文字不可见闪烁）</td></tr>
+  <tr><td>打印样式</td><td>关键页面需提供 <code>@media print</code>，隐藏导航、侧边栏等无关元素</td></tr>
+  <tr><td>SCSS @extend</td><td>禁止使用 <code>@extend</code>，用 <code>@mixin</code> + <code>@include</code> 代替——extend 生成的 CSS 选择器顺序不可控</td></tr>
+</table>
+
+<!-- ============================================================
+     Ch5: JavaScript 规范
+     ============================================================ -->
+<h2 id="ch5">五、JavaScript 规范</h2>
+
+<p>JS 是最容易写出坏代码的语言之一——它的灵活性既是优点也是陷阱。以下规则围绕<strong>可读性</strong>和<strong>可维护性</strong>展开。</p>
+
+<h3>5.1 变量声明</h3>
+<p>永远用 <code>const</code> 和 <code>let</code>，忘记 <code>var</code> 的存在。<code>var</code> 有变量提升和作用域问题，是早期 JS 的设计缺陷。用字面量创建对象和数组，别用 <code>new Object()</code> 或 <code>new Array()</code>——字面量更短，而且不会有 <code>new Array(3)</code> 产生的歧义。</p>
+<div class="code-block">
+  <div class="lang">JavaScript</div>
+<pre><code><span class="cm">// const 声明常量，let 声明可变变量，禁止 var</span>
+<span class="kw">const</span> <span class="pl">name</span> = <span class="str">'Alice'</span>;
+<span class="kw">let</span> <span class="pl">count</span> = <span class="num">0</span>;
+
+<span class="cm">// 字面量创建对象和数组</span>
+<span class="kw">const</span> <span class="pl">user</span> = { <span class="pl">name</span>: <span class="str">'Alice'</span>, <span class="pl">age</span>: <span class="num">25</span> };
+<span class="kw">const</span> <span class="pl">items</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+
+<span class="cm">// 解构赋值 — 少写很多 .xxx</span>
+<span class="kw">const</span> { <span class="pl">name</span>, <span class="pl">age</span> } = <span class="pl">user</span>;
+<span class="kw">const</span> [<span class="pl">first</span>, <span class="pl">second</span>] = <span class="pl">items</span>;
+
+<span class="cm">// 模板字符串 — 告别 + 号拼接</span>
+<span class="kw">const</span> <span class="pl">greeting</span> = <span class="str">`Hello, </span><span class="kw">${</span><span class="pl">name</span><span class="kw">}</span><span class="str">!`</span>;</code></pre>
+</div>
+
+<h3>5.2 函数规范</h3>
+<table>
+  <tr><th>项</th><th>要求</th><th>原因</th></tr>
+  <tr><td>行数</td><td>原则上不超过 80 行</td><td>超过说明职责太多，应该拆分</td></tr>
+  <tr><td>参数</td><td>不超过 4 个，超过用 options 对象</td><td>参数太多调用时容易搞错顺序</td></tr>
+  <tr><td>箭头函数</td><td>回调优先用箭头函数</td><td><code>this</code> 指向不会变，少写 bind</td></tr>
+  <tr><td>早期返回</td><td>用 early return 减少嵌套</td><td>条件判断放前面，主线逻辑保持扁平</td></tr>
+  <tr><td>纯函数优先</td><td>尽量不依赖外部状态</td><td>输入一样输出就一样，容易测试和推理</td></tr>
+</table>
+
+<div class="compare">
+  <div class="bad">
+    <div class="label">不推荐 — 嵌套过深</div>
+<pre><code><span class="kw">function</span> <span class="fn">processOrder</span>(<span class="pl">order</span>) {
+  <span class="kw">if</span> (order) {
+    <span class="kw">if</span> (order.status === <span class="str">'pending'</span>) {
+      <span class="kw">if</span> (order.amount > <span class="num">0</span>) {
+        <span class="kw">if</span> (order.items.length > <span class="num">0</span>) {
+          <span class="kw">return</span> <span class="fn">validate</span>(order);
+        }
+      }
+    }
+  }
+}</code></pre>
+  </div>
+  <div class="good">
+    <div class="label">推荐 — 早期返回</div>
+<pre><code><span class="kw">function</span> <span class="fn">processOrder</span>(<span class="pl">order</span>) {
+  <span class="kw">if</span> (!order) <span class="kw">return</span> <span class="kw">null</span>;
+  <span class="kw">if</span> (order.status !== <span class="str">'pending'</span>) <span class="kw">return</span> <span class="kw">null</span>;
+  <span class="kw">if</span> (order.amount <= <span class="num">0</span>) <span class="kw">return</span> <span class="kw">null</span>;
+  <span class="kw">if</span> (!order.items.length) <span class="kw">return</span> <span class="kw">null</span>;
+  <span class="kw">return</span> <span class="fn">validate</span>(order);
+}</code></pre>
+  </div>
+</div>
+<p>左边的代码之所以不好，不是因为它写错了，而是读起来累——每次看都要把四层 if 在脑子里展开。右边把所有边界条件先排除，最后只剩一条清晰的主线。</p>
+
+<h3>5.3 异步处理</h3>
+<p><code>async/await</code> 是写异步代码的首选。它比 <code>.then()</code> 链更容易读，错误处理也更自然（用 <code>try/catch</code> 而不是 <code>.catch()</code>）。多个互不依赖的请求用 <code>Promise.all</code> 并行发出，不要傻等。</p>
+<div class="code-block">
+  <div class="lang">JavaScript</div>
+<pre><code><span class="cm">// async/await + try/catch</span>
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">fetchUserData</span>(<span class="pl">userId</span>) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> <span class="pl">user</span> = <span class="kw">await</span> <span class="fn">api</span>.<span class="fn">get</span>(<span class="str">`/users/</span><span class="kw">${</span><span class="pl">userId</span><span class="kw">}</span><span class="str">`</span>);
+    <span class="kw">const</span> <span class="pl">posts</span> = <span class="kw">await</span> <span class="fn">api</span>.<span class="fn">get</span>(<span class="str">`/users/</span><span class="kw">${</span><span class="pl">userId</span><span class="kw">}</span><span class="str">/posts`</span>);
+    <span class="kw">return</span> { <span class="pl">user</span>: <span class="pl">user</span>.<span class="pl">data</span>, <span class="pl">posts</span>: <span class="pl">posts</span>.<span class="pl">data</span> };
+  } <span class="kw">catch</span> (error) {
+    <span class="pl">console</span>.<span class="fn">error</span>(<span class="str">'获取失败:'</span>, error);
+    <span class="kw">throw</span> error;
+  }
+}
+
+<span class="cm">// 互不依赖的请求用 Promise.all 并行</span>
+<span class="kw">const</span> [<span class="pl">users</span>, <span class="pl">products</span>] = <span class="kw">await</span> <span class="ty">Promise</span>.<span class="fn">all</span>([
+  <span class="fn">fetchUsers</span>(),
+  <span class="fn">fetchProducts</span>(),
+]);</code></pre>
+</div>
+
+<h3>5.4 数组与对象操作</h3>
+<p>用 <code>map</code> <code>filter</code> <code>reduce</code> 替代传统的 for 循环。不是性能问题——现代引擎对这些高阶函数优化得很好——而是它们<strong>表达意图更清晰</strong>。看到 <code>filter</code> 就知道在筛选，看到 <code>map</code> 就知道在转换。</p>
+<div class="code-block">
+  <div class="lang">JavaScript</div>
+<pre><code><span class="cm">// 扩展运算符 — 浅拷贝、合并的利器</span>
+<span class="kw">const</span> <span class="pl">copy</span> = [...<span class="pl">original</span>];
+<span class="kw">const</span> <span class="pl">merged</span> = { ...<span class="pl">defaults</span>, ...<span class="pl">options</span> };
+
+<span class="cm">// 高阶函数 — 一眼看出在做什么</span>
+<span class="kw">const</span> <span class="pl">activeUsers</span> = <span class="pl">users</span>.<span class="fn">filter</span>(<span class="pl">u</span> => <span class="pl">u</span>.<span class="pl">isActive</span>);
+<span class="kw">const</span> <span class="pl">names</span> = <span class="pl">users</span>.<span class="fn">map</span>(<span class="pl">u</span> => <span class="pl">u</span>.<span class="pl">name</span>);
+<span class="kw">const</span> <span class="pl">total</span> = <span class="pl">orders</span>.<span class="fn">reduce</span>((<span class="pl">s</span>, <span class="pl">o</span>) => <span class="pl">s</span> + <span class="pl">o</span>.<span class="pl">amount</span>, <span class="num">0</span>);
+
+<span class="cm">// 严格相等 === 而非 ==</span>
+<span class="kw">if</span> (<span class="pl">value</span> === <span class="kw">null</span>) {}
+<span class="kw">if</span> (<span class="pl">items</span>.<span class="pl">length</span> === <span class="num">0</span>) {}</code></pre>
+</div>
+
+<div class="note">
+  <strong>几个容易忽略的点：</strong><br>
+  <code>parseInt()</code> 必须带第二个参数指定基数，否则 <code>parseInt('08')</code> 在老引擎里会返回 0。<br>
+  条件判断和循环嵌套最多 3 层，超过了就拆函数或用 early return。<br>
+  <code>console.log</code> 提交前删干净——生产环境不该有调试日志。<br>
+   禁止 <code>new String()</code> <code>new Number()</code> <code>new Boolean()</code>——它们创建的是对象不是基本类型，<code>typeof</code> 结果不一致。
+</div>
+
+<h3>5.5 模块导入顺序</h3>
+<p>import 语句按以下顺序分组，组之间空一行：第三方库 → 路径别名（<code>@/</code>）→ 相对路径。同一组内按字母序排列。</p>
+<div class="code-block">
+  <div class="lang">JavaScript</div>
+<pre><code><span class="cm">// 1. 第三方库</span>
+<span class="kw">import</span> <span class="pl">React</span> <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { <span class="pl">debounce</span> } <span class="kw">from</span> <span class="str">'lodash-es'</span>;
+
+<span class="cm">// 2. 路径别名</span>
+<span class="kw">import</span> { <span class="pl">UserCard</span> } <span class="kw">from</span> <span class="str">'@/components'</span>;
+<span class="kw">import</span> { <span class="pl">userApi</span> } <span class="kw">from</span> <span class="str">'@/api'</span>;
+
+<span class="cm">// 3. 相对路径</span>
+<span class="kw">import</span> { <span class="pl">formatDate</span> } <span class="kw">from</span> <span class="str">'./utils'</span>;
+<span class="kw">import</span> <span class="pl">styles</span> <span class="kw">from</span> <span class="str">'./styles.module.css'</span>;</code></pre>
+</div>
+
+<h3>5.6 错误处理</h3>
+<p>任何可能失败的异步操作必须有 try/catch。catch 中至少要做两件事：记录错误（方便排查）和提供用户友好的提示（不要让用户看到 <code>TypeError: Cannot read property...</code>）。</p>
+<div class="code-block">
+  <div class="lang">JavaScript</div>
+<pre><code><span class="kw">async</span> <span class="kw">function</span> <span class="fn">submitForm</span>(<span class="pl">data</span>) {
+  <span class="kw">try</span> {
+    <span class="kw">await</span> <span class="fn">api</span>.<span class="fn">post</span>(<span class="str">'/submit'</span>, data);
+    <span class="fn">showSuccess</span>(<span class="str">'提交成功'</span>);
+  } <span class="kw">catch</span> (error) {
+    <span class="pl">console</span>.<span class="fn">error</span>(<span class="str">'提交失败'</span>, error);
+    <span class="fn">showError</span>(<span class="str">'提交失败，请稍后重试'</span>);
+  }
+}</code></pre>
+</div>
+
+<h3>5.7 定时器与事件监听清理</h3>
+<p><code>setInterval</code> / <code>setTimeout</code> 必须在组件卸载或不再需要时清除，否则会造成内存泄漏和意外行为。同样，<code>addEventListener</code> 必须有对应的 <code>removeEventListener</code>。Vue 中用 <code>onUnmounted</code>，React 中用 <code>useEffect</code> 的 return 清理函数。</p>
+
+<h3>5.8 浏览器存储与 URL 处理</h3>
+<table>
+  <tr><th>项</th><th>要求</th></tr>
+  <tr><td>localStorage key</td><td>使用命名空间前缀避免冲突：<code>myapp:token</code>、<code>myapp:theme</code></td></tr>
+  <tr><td>敏感数据</td><td>禁止在 localStorage/sessionStorage 中存储密码、Token 等敏感信息</td></tr>
+  <tr><td>URL 参数</td><td>传递到 URL 的字符串必须用 <code>encodeURIComponent</code> 编码</td></tr>
+  <tr><td>URL 构建</td><td>用 <code>URL</code> 或 <code>URLSearchParams</code> API 拼接参数，不要手动拼字符串</td></tr>
+</table>
+
+<!-- ============================================================
+     Ch6: TypeScript 规范
+     ============================================================ -->
+<h2 id="ch6">六、TypeScript 规范</h2>
+
+<p>TypeScript 的核心价值不是"写类型标注"，而是<strong>让编译器在你点下保存按钮时就告诉你哪里可能出错</strong>，而不是等用户撞上了才发现。开严格模式，不要偷懒用 <code>any</code>。</p>
+
+<h3>6.1 严格模式</h3>
+<p>新项目 <code>tsconfig.json</code> 必须开启 <code>strict: true</code>。这相当于一次性打开了所有严格检查开关。如果你觉得某个检查太烦想关掉——先想想是不是你的代码设计有问题，而不是编译器太严格。</p>
+<div class="code-block">
+  <div class="lang">JSON — tsconfig.json</div>
+<pre><code>{
+  <span class="pp">"compilerOptions"</span>: {
+    <span class="pp">"strict"</span>: <span class="kw">true</span>,
+    <span class="pp">"noImplicitAny"</span>: <span class="kw">true</span>,
+    <span class="pp">"strictNullChecks"</span>: <span class="kw">true</span>,
+    <span class="pp">"noUnusedLocals"</span>: <span class="kw">true</span>,
+    <span class="pp">"noUnusedParameters"</span>: <span class="kw">true</span>,
+    <span class="pp">"esModuleInterop"</span>: <span class="kw">true</span>,
+    <span class="pp">"forceConsistentCasingInFileNames"</span>: <span class="kw">true</span>
+  }
+}</code></pre>
+</div>
+
+<h3>6.2 类型定义</h3>
+<p>用 <code>interface</code> 定义对象形状，用 <code>type</code> 定义联合类型和工具类型。两者大部分情况可以互换，但团队内部约定好使用场景能减少选择纠结。</p>
+<div class="code-block">
+  <div class="lang">TypeScript</div>
+<pre><code><span class="cm">// interface — 定义对象的结构（可被 extend）</span>
+<span class="kw">interface</span> <span class="ty">User</span> {
+  <span class="pl">id</span>: <span class="ty">string</span>;
+  <span class="pl">name</span>: <span class="ty">string</span>;
+  <span class="pl">email</span>: <span class="ty">string</span>;
+  <span class="pl">age</span>?: <span class="ty">number</span>;          <span class="cm">// ? 表示可选</span>
+  <span class="pl">role</span>: <span class="ty">UserRole</span>;
+}
+
+<span class="cm">// type — 联合类型、交叉类型、工具类型</span>
+<span class="kw">type</span> <span class="ty">UserRole</span> = <span class="str">'admin'</span> | <span class="str">'editor'</span> | <span class="str">'viewer'</span>;
+<span class="kw">type</span> <span class="ty">ApiResponse</span>&lt;<span class="ty">T</span>&gt; = {
+  <span class="pl">code</span>: <span class="ty">number</span>;
+  <span class="pl">data</span>: <span class="ty">T</span>;
+  <span class="pl">message</span>: <span class="ty">string</span>;
+};
+
+<span class="cm">// enum — 一组有名字的常量</span>
+<span class="kw">enum</span> <span class="ty">OrderStatus</span> {
+  <span class="ty">Pending</span> = <span class="str">'PENDING'</span>,
+  <span class="ty">Shipped</span> = <span class="str">'SHIPPED'</span>,
+  <span class="ty">Delivered</span> = <span class="str">'DELIVERED'</span>,
+}</code></pre>
+</div>
+
+<div class="note">
+  <strong>关于 any：</strong>写 <code>any</code> 等于把 TypeScript 退化成了 JavaScript。如果你暂时不知道类型，用 <code>unknown</code>——它和 <code>any</code> 一样接受任何值，但用之前必须做类型收窄，编译器会帮你检查。
+</div>
+
+<h3>6.3 泛型</h3>
+<p>泛型让函数和类型可以复用，同时保持类型安全。不会用的可以先不写，但看懂别人写的泛型是基本要求。</p>
+<div class="code-block">
+  <div class="lang">TypeScript</div>
+<pre><code><span class="cm">// 泛型函数 — T 在调用时自动推断</span>
+<span class="kw">function</span> <span class="fn">getProperty</span>&lt;<span class="ty">T</span>, <span class="ty">K</span> <span class="kw">extends</span> <span class="kw">keyof</span> <span class="ty">T</span>&gt;(<span class="pl">obj</span>: <span class="ty">T</span>, <span class="pl">key</span>: <span class="ty">K</span>): <span class="ty">T</span>[<span class="ty">K</span>] {
+  <span class="kw">return</span> <span class="pl">obj</span>[<span class="pl">key</span>];
+}
+
+<span class="cm">// 内置工具类型 — 不用自己写</span>
+<span class="kw">type</span> <span class="ty">PartialUser</span> = <span class="ty">Partial</span>&lt;<span class="ty">User</span>&gt;;        <span class="cm">// 所有属性变可选</span>
+<span class="kw">type</span> <span class="ty">UserPreview</span> = <span class="ty">Pick</span>&lt;<span class="ty">User</span>, <span class="str">'id'</span> | <span class="str">'name'</span>&gt;;  <span class="cm">// 只取部分属性</span>
+<span class="kw">type</span> <span class="ty">ReadonlyUser</span> = <span class="ty">Readonly</span>&lt;<span class="ty">User</span>&gt;;      <span class="cm">// 所有属性变只读</span>
+<span class="kw">type</span> <span class="ty">UserInput</span> = <span class="ty">Omit</span>&lt;<span class="ty">User</span>, <span class="str">'id'</span>&gt;;         <span class="cm">// 排除某些属性</span></code></pre>
+</div>
+
+<h3>6.4 type vs interface 选择指南</h3>
+<table>
+  <tr><th>场景</th><th>使用</th><th>原因</th></tr>
+  <tr><td>定义对象形状</td><td><code>interface</code></td><td>可被 extend/implements，报错信息更清晰</td></tr>
+  <tr><td>联合类型、交叉类型</td><td><code>type</code></td><td>interface 不支持联合类型</td></tr>
+  <tr><td>工具类型组合</td><td><code>type</code></td><td><code>Pick&lt;A & B, 'x'&gt;</code> 只能用 type</td></tr>
+  <tr><td>函数签名</td><td><code>type</code></td><td><code>type Fn = (x: string) => void</code> 更简洁</td></tr>
+</table>
+
+<h3>6.5 类型导入与类型守卫</h3>
+<div class="code-block">
+  <div class="lang">TypeScript</div>
+<pre><code><span class="cm">// import type — 明确的类型导入，编译后会被完全移除</span>
+<span class="kw">import</span> <span class="kw">type</span> { <span class="ty">User</span>, <span class="ty">ApiResponse</span> } <span class="kw">from</span> <span class="str">'@/types'</span>;
+<span class="kw">import</span> { <span class="pl">userApi</span> } <span class="kw">from</span> <span class="str">'@/api'</span>;  <span class="cm">// 值导入，编译后保留</span>
+
+<span class="cm">// 类型守卫 — 收窄 unknown 类型</span>
+<span class="kw">function</span> <span class="fn">isUser</span>(<span class="pl">obj</span>: <span class="ty">unknown</span>): <span class="pl">obj</span> <span class="kw">is</span> <span class="ty">User</span> {
+  <span class="kw">return</span> <span class="kw">typeof</span> obj === <span class="str">'object'</span> && obj !== <span class="kw">null</span> && <span class="str">'id'</span> <span class="kw">in</span> obj;
+}
+
+<span class="cm">// const assertion — 将字面量推断为最窄类型</span>
+<span class="kw">const</span> <span class="pl">colors</span> = [<span class="str">'red'</span>, <span class="str">'green'</span>] <span class="kw">as</span> <span class="kw">const</span>;
+<span class="cm">// 类型变为 readonly ["red", "green"]，而非 string[]</span></code></pre>
+</div>
+
+<!-- ============================================================
+     Ch7: 注释规范
+     ============================================================ -->
+<h2 id="ch7">七、注释规范</h2>
+
+<p>注释的作用是解释<strong>为什么</strong>这样做，而不是<strong>做了什么</strong>——后者代码本身已经说清楚了。好的注释让接手的人不用猜你的意图，坏的注释只是在制造噪音。</p>
+
+<h3>7.1 单行注释</h3>
+<p>用 <code>//</code> 后跟一个空格。写注释前先问自己：这段代码删掉注释后，下一个人还能不能看懂？如果能，说明注释在重复代码，可以删。</p>
+
+<div class="code-block">
+  <div class="lang">JavaScript</div>
+<pre><code><span class="cm">// 注释前保留一个空格</span>
+
+<span class="cm">// 计算税费：税率根据地区动态获取 (API: /tax/rate)</span>
+<span class="kw">const</span> <span class="pl">tax</span> = <span class="pl">amount</span> * <span class="fn">getTaxRate</span>(<span class="pl">region</span>);
+
+<span class="cm">// ❌ 不推荐 — 注释重复代码</span>
+<span class="cm">// 设置 name 为 'Alice'</span>
+<span class="kw">const</span> <span class="pl">name</span> = <span class="str">'Alice'</span>;</code></pre>
+</div>
+
+<h3>7.2 JSDoc 注释</h3>
+<p>函数、类、接口必须有 JSDoc 注释。不需要每行都写，但要覆盖参数含义、返回值、可能抛出的异常。编辑器会根据 JSDoc 提供智能提示，调用方不用跳转到定义就能知道怎么用。</p>
+
+<div class="code-block">
+  <div class="lang">TypeScript</div>
+<pre><code><span class="cm">/**
+ * 根据用户 ID 获取用户信息
+ * @param userId - 用户唯一标识
+ * @param options - 可选配置
+ * @param options.includePosts - 是否包含文章列表
+ * @returns 用户信息对象，失败时返回 null
+ * @throws {ApiError} 网络请求失败时抛出
+ */</span>
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">fetchUser</span>(
+  <span class="pl">userId</span>: <span class="ty">string</span>,
+  <span class="pl">options</span>?: { <span class="pl">includePosts</span>?: <span class="ty">boolean</span> }
+): <span class="ty">Promise</span>&lt;<span class="ty">User</span> | <span class="kw">null</span>&gt; {
+  <span class="cm">// ...</span>
+}
+
+<span class="cm">/**
+ * 订单状态枚举
+ */</span>
+<span class="kw">enum</span> <span class="ty">OrderStatus</span> {
+  <span class="cm">/** 待支付 */</span>
+  <span class="ty">Pending</span> = <span class="str">'PENDING'</span>,
+  <span class="cm">/** 已发货 */</span>
+  <span class="ty">Shipped</span> = <span class="str">'SHIPPED'</span>,
+}</code></pre>
+</div>
+
+<h3>7.3 TODO / FIXME 标记</h3>
+<p>这些标记让团队能快速定位需要关注的代码。IDE 通常会自动高亮它们。标记后最好带上 JIRA 编号或负责人，方便追溯。</p>
+<table>
+  <tr><th style="width:15%">标记</th><th>用途</th><th>示例</th></tr>
+  <tr><td><code>TODO</code></td><td>待完成的功能或优化</td><td><code>// TODO: 接入真实支付接口 (JIRA-456)</code></td></tr>
+  <tr><td><code>FIXME</code></td><td>已知问题，需要修复</td><td><code>// FIXME: 浮点数精度问题，改用 decimal.js</code></td></tr>
+  <tr><td><code>HACK</code></td><td>临时方案，需要重构</td><td><code>// HACK: 绕过 IE 兼容问题，下个版本移除</code></td></tr>
+  <tr><td><code>NOTE</code></td><td>重要说明信息</td><td><code>// NOTE: 此接口每分钟限流 100 次</code></td></tr>
+</table>
+
+<h3>7.4 CSS 注释规范</h3>
+<div class="code-block">
+  <div class="lang">CSS</div>
+<pre><code><span class="cm">/* ===== 页面头部 ===== */</span>
+<span class="pl">.header</span> {
+  <span class="pp">display</span>: <span class="pp">flex</span>;
+}
+
+<span class="cm">/* ===== 商品卡片 ===== */</span>
+<span class="pl">.product-card</span> { }
+<span class="pl">.product-card__image</span> { }
+<span class="pl">.product-card__price</span> { }</code></pre>
+</div>
+
+<h3>7.5 HTML 注释规范</h3>
+<div class="code-block">
+  <div class="lang">HTML</div>
+<pre><code><span class="c">&lt;!-- 页面头部 --&gt;</span>
+<span class="nt">&lt;header&gt;</span>
+  <span class="nt">&lt;nav&gt;</span>...<span class="nt">&lt;/nav&gt;</span>
+<span class="nt">&lt;/header&gt;</span>
+
+<span class="c">&lt;!-- 主要内容区 --&gt;</span>
+<span class="nt">&lt;main&gt;</span>
+  <span class="c">&lt;!-- TODO: 待添加侧边栏 --&gt;</span>
+<span class="nt">&lt;/main&gt;</span></code></pre>
+</div>
+
+<div class="note">
+  注释掉的旧代码不得长期保留。提交前应删除所有调试用的 <code>console.log</code> 注释。
+</div>
+
+<h3>7.6 文件头注释</h3>
+<p>每个源文件顶部应有简短描述。工具函数文件说明用途，组件文件一句话概括职责。</p>
+<div class="code-block">
+  <div class="lang">TypeScript</div>
+<pre><code><span class="cm">/**
+ * 日期格式化工具函数
+ * 提供项目中统一的日期展示、计算和校验方法
+ */</span>
+<span class="kw">export</span> <span class="kw">function</span> <span class="fn">formatDate</span>(<span class="pl">date</span>: <span class="ty">Date</span>): <span class="ty">string</span> { <span class="cm">/* ... */</span> }
+
+<span class="cm">/** 用户信息卡片，支持编辑和删除两种模式 */</span>
+<span class="kw">export</span> <span class="kw">const</span> <span class="ty">UserCard</span> = () => { <span class="cm">/* ... */</span> }</code></pre>
+</div>
+
+<h3>7.7 @deprecated 标记</h3>
+<p>废弃的 API、函数、组件用 <code>@deprecated</code> 标记，同时写明替代方案。给调用方一个迁移窗口期，窗口结束后删除。</p>
+<div class="code-block">
+  <div class="lang">TypeScript</div>
+<pre><code><span class="cm">/**
+ * @deprecated 自 v2.3 起废弃，请使用 {@link fetchUserV2} 代替。
+ * 该函数将在 v3.0 中移除。
+ */</span>
+<span class="kw">export</span> <span class="kw">function</span> <span class="fn">fetchUser</span>(<span class="pl">id</span>: <span class="ty">string</span>) { <span class="cm">/* ... */</span> }</code></pre>
+</div>
+
+<!-- ============================================================
+     Ch8: Vue 组件规范
+     ============================================================ -->
+<h2 id="ch8">八、Vue 组件规范</h2>
+
+<p>Vue 的灵活性是把双刃剑——同一个功能可以用好几种方式实现。以下规则不是为了限制你，而是让团队成员之间写出来的组件结构一致，互相能快速看懂。</p>
+
+<h3>8.1 命名规则</h3>
+<p>组件名必须多个单词，因为 HTML 标准元素全是单单词（<code>&lt;input&gt;</code>、<code>&lt;nav&gt;</code>），用多单词避免和未来的 HTML 元素冲突。</p>
+<table>
+  <tr><th>项</th><th>规则</th><th>示例</th></tr>
+  <tr><td>组件名</td><td>多单词，PascalCase</td><td><code>UserProfile</code></td></tr>
+  <tr><td>基础组件</td><td><code>Base</code> / <code>App</code> 前缀</td><td><code>BaseButton</code></td></tr>
+  <tr><td>单例组件</td><td><code>The</code> 前缀</td><td><code>TheHeader</code></td></tr>
+  <tr><td>紧密耦合</td><td>父组件名前缀</td><td><code>TodoList</code> → <code>TodoListItem</code></td></tr>
+  <tr><td>模板中使用</td><td>kebab-case</td><td><code>&lt;user-profile /&gt;</code></td></tr>
+</table>
+
+<h3>8.2 单文件组件结构</h3>
+<p>一个标准的 Vue SFC 按 <code>&lt;template&gt;</code> → <code>&lt;script setup&gt;</code> → <code>&lt;style scoped&gt;</code> 的顺序排列。Props 用 TypeScript 泛型定义（不需要单独写 validator），Emits 也显式声明类型。</p>
+<div class="code-block">
+  <div class="lang">Vue</div>
+<pre><code><span class="nt">&lt;template&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"user-profile"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;h2&gt;</span>{{ user.name }}<span class="nt">&lt;/h2&gt;</span>
+    <span class="nt">&lt;base-button</span> <span class="na">@click=</span><span class="s">"handleEdit"</span><span class="nt">&gt;</span>编辑<span class="nt">&lt;/base-button&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+
+<span class="nt">&lt;script</span> <span class="na">setup</span> <span class="na">lang=</span><span class="s">"ts"</span><span class="nt">&gt;</span>
+<span class="kw">import</span> { <span class="pl">ref</span>, <span class="pl">computed</span> } <span class="kw">from</span> <span class="str">'vue'</span>;
+<span class="kw">import</span> <span class="kw">type</span> { <span class="ty">User</span> } <span class="kw">from</span> <span class="str">'@/types'</span>;
+
+<span class="kw">const</span> <span class="pl">props</span> = <span class="fn">defineProps</span>&lt;{
+  <span class="pl">user</span>: <span class="ty">User</span>;
+  <span class="pl">editable</span>?: <span class="ty">boolean</span>;
+}&gt;();
+
+<span class="kw">const</span> <span class="pl">emit</span> = <span class="fn">defineEmits</span>&lt;{
+  (<span class="pl">e</span>: <span class="str">'update'</span>, <span class="pl">user</span>: <span class="ty">User</span>): <span class="kw">void</span>;
+}&gt;();
+
+<span class="kw">const</span> <span class="pl">isEditing</span> = <span class="fn">ref</span>(<span class="kw">false</span>);
+
+<span class="kw">const</span> <span class="pl">displayName</span> = <span class="fn">computed</span>(() =>
+  <span class="pl">props</span>.<span class="pl">user</span>.<span class="pl">name</span> || <span class="str">'未知用户'</span>
+);
+
+<span class="kw">function</span> <span class="fn">handleEdit</span>() {
+  <span class="fn">emit</span>(<span class="str">'update'</span>, <span class="pl">props</span>.<span class="pl">user</span>);
+}
+<span class="nt">&lt;/script&gt;</span>
+
+<span class="nt">&lt;style</span> <span class="na">scoped</span><span class="nt">&gt;</span>
+<span class="pl">.user-profile</span> {
+  <span class="pp">padding</span>: <span class="num">16</span><span class="kw">px</span>;
+}
+<span class="nt">&lt;/style&gt;</span></code></pre>
+</div>
+
+<h3>8.3 规范要点</h3>
+<table>
+  <tr><th>项</th><th>要求</th><th>原因</th></tr>
+  <tr><td>语法</td><td>推荐 <code>&lt;script setup&gt;</code></td><td>比 Options API 更简洁，类型推导更好</td></tr>
+  <tr><td>Props</td><td>必须定义类型、默认值</td><td>让使用组件的人知道传什么参数</td></tr>
+  <tr><td>v-for</td><td>必须设置唯一 <code>key</code></td><td>Vue 用 key 追踪节点，没有 key 会导致渲染错乱</td></tr>
+  <tr><td>v-if / v-show</td><td>频繁切换用 <code>v-show</code></td><td>v-if 每次切换都销毁重建，v-show 只是 display 切换</td></tr>
+  <tr><td>v-if 与 v-for</td><td>禁止同一元素同时使用</td><td>v-for 优先级高于 v-if，会导致不必要的循环</td></tr>
+  <tr><td>样式作用域</td><td><code>scoped</code> 或 CSS Modules</td><td>防止样式污染全局</td></tr>
+  <tr><td>路由</td><td>动态 <code>import()</code> 懒加载</td><td>首屏只加载当前页面代码，减少白屏时间</td></tr>
+  <tr><td>模板表达式</td><td>保持简单</td><td>复杂逻辑放 computed，模板只负责展示</td></tr>
+</table>
+
+<h3>8.4 Composable 与高级特性</h3>
+<table>
+  <tr><th>项</th><th>要求</th></tr>
+  <tr><td>Composable 命名</td><td><code>use</code> 前缀，文件名与函数名一致：<code>useAuth.ts</code> → <code>useAuth()</code></td></tr>
+  <tr><td>Composable 返回值</td><td>返回 <code>{ data, loading, error, execute }</code> 结构，调用方按需解构</td></tr>
+  <tr><td>插槽命名</td><td>kebab-case：<code>&lt;template #header-actions&gt;</code></td></tr>
+  <tr><td>provide/inject</td><td>Key 用 Symbol 或常量避免冲突；inject 必须提供默认值</td></tr>
+  <tr><td>watch vs watchEffect</td><td>需要对比新旧值时用 <code>watch</code>；只需追踪依赖自动执行时用 <code>watchEffect</code></td></tr>
+  <tr><td>defineExpose</td><td>只在确实需要父组件调用子组件方法时使用，尽量不暴露内部状态</td></tr>
+  <tr><td>Teleport</td><td>用于 Modal、Toast 等需要脱离组件层级渲染的场景，目标元素确保存在</td></tr>
+</table>
+
+<!-- ============================================================
+     Ch9: React 组件规范
+     ============================================================ -->
+<h2 id="ch9">九、React 组件规范</h2>
+
+<p>React 的函数组件 + Hooks 模式已经很成熟了。Class 组件是历史遗留，新代码全部用函数组件。关键是控制好重渲染——React 默认父组件更新时子组件也会更新，合理使用 <code>useMemo</code> 和 <code>useCallback</code> 能省掉很多不必要的渲染。</p>
+
+<h3>9.1 函数组件</h3>
+<p>Props 接口写在组件上方，一眼能看到组件需要什么数据。事件处理函数以 <code>handle</code> 开头，方便在 JSX 里和 <code>onClick</code> 等原生事件区分。</p>
+<div class="code-block">
+  <div class="lang">TSX</div>
+<pre><code><span class="kw">import</span> { <span class="pl">useState</span>, <span class="pl">useCallback</span>, <span class="pl">useMemo</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> <span class="kw">type</span> { <span class="ty">FC</span> } <span class="kw">from</span> <span class="str">'react'</span>;
+
+<span class="kw">interface</span> <span class="ty">UserCardProps</span> {
+  <span class="pl">user</span>: <span class="ty">User</span>;
+  <span class="pl">onEdit</span>?: (<span class="pl">user</span>: <span class="ty">User</span>) => <span class="kw">void</span>;
+}
+
+<span class="kw">export</span> <span class="kw">const</span> <span class="ty">UserCard</span>: <span class="ty">FC</span>&lt;<span class="ty">UserCardProps</span>&gt; = ({ <span class="pl">user</span>, <span class="pl">onEdit</span> }) => {
+  <span class="kw">const</span> [<span class="pl">isExpanded</span>, <span class="pl">setExpanded</span>] = <span class="fn">useState</span>(<span class="kw">false</span>);
+
+  <span class="kw">const</span> <span class="pl">handleEdit</span> = <span class="fn">useCallback</span>(() => {
+    <span class="pl">onEdit</span>?.(<span class="pl">user</span>);
+  }, [<span class="pl">onEdit</span>, <span class="pl">user</span>]);
+
+  <span class="kw">const</span> <span class="pl">displayName</span> = <span class="fn">useMemo</span>(() =>
+    <span class="pl">user</span>.<span class="pl">nickname</span> || <span class="pl">user</span>.<span class="pl">name</span>,
+  [<span class="pl">user</span>]);
+
+  <span class="kw">return</span> (
+    &lt;<span class="nt">div</span>&gt;
+      &lt;<span class="nt">h3</span>&gt;{<span class="pl">displayName</span>}&lt;/<span class="nt">h3</span>&gt;
+      &lt;<span class="nt">button</span> <span class="na">onClick</span>={<span class="pl">handleEdit</span>}&gt;编辑&lt;/<span class="nt">button</span>&gt;
+    &lt;/<span class="nt">div</span>&gt;
+  );
+};
+
+<span class="ty">UserCard</span>.<span class="pl">displayName</span> = <span class="str">'UserCard'</span>;</code></pre>
+</div>
+
+<h3>9.2 规范要点</h3>
+<table>
+  <tr><th>项</th><th>要求</th><th>原因</th></tr>
+  <tr><td>组件类型</td><td>函数组件 + Hooks</td><td>Class 组件语法冗余，Hooks 更灵活且逻辑复用更方便</td></tr>
+  <tr><td>Props</td><td>TypeScript interface 定义</td><td>类型安全，编辑器自动补全</td></tr>
+  <tr><td>自定义 Hook</td><td><code>use</code> 前缀</td><td>React 的规则：Hook 必须以 use 开头，否则 lint 会报错</td></tr>
+  <tr><td>事件处理</td><td><code>handle</code> 前缀</td><td>区别于原生事件属性名，如 <code>handleClick</code> vs <code>onClick</code></td></tr>
+  <tr><td>组件大小</td><td>不超过 300 行</td><td>超过说明职责太多，应该拆分</td></tr>
+  <tr><td>内联函数</td><td>避免在 JSX 中直接写</td><td>每次渲染都创建新函数引用，导致子组件不必要的重渲染</td></tr>
+  <tr><td>displayName</td><td>必须设置</td><td>React DevTools 中显示的名字，方便调试</td></tr>
+</table>
+
+<h3>9.3 useEffect 与性能细节</h3>
+<table>
+  <tr><th>项</th><th>要求</th></tr>
+  <tr><td>useEffect 清理</td><td>订阅、定时器、事件监听必须在 return 中清理，避免内存泄漏</td></tr>
+  <tr><td>Context 使用</td><td>只有真正需要跨多层级共享的数据才放 Context（主题、语言、认证），不要替代 Props</td></tr>
+  <tr><td>列表 key</td><td>用唯一 ID（数据库主键），禁止用 <code>index</code>——数据顺序变化时会导致渲染错乱</td></tr>
+  <tr><td>forwardRef</td><td>需要暴露 DOM 节点给父组件时使用，优先用 Props 回调替代 ref 操作</td></tr>
+  <tr><td>lazy + Suspense</td><td>非首屏组件用 <code>lazy()</code> 动态导入，配合 <code>&lt;Suspense&gt;</code> 提供加载中的 fallback UI</td></tr>
+</table>
+
+<!-- ============================================================
+     Ch10: 项目结构
+     ============================================================ -->
+<h2 id="ch10">十、项目结构</h2>
+
+<p>目录结构的目标是<strong>让新加入的同事能在 10 分钟内找到他需要的文件</strong>。不是追求完美分类，而是追求直觉可预测——看到一个文件名，不用想就知道它应该在哪个目录。</p>
+
+<h3>10.1 标准目录</h3>
+<div class="code-block">
+  <div class="lang">Directory Tree</div>
+<pre><code>project/
+├── public/              静态资源（不参与打包）
+├── src/
+│   ├── api/             接口封装
+│   │   ├── modules/     按业务模块拆分
+│   │   └── request.ts   axios 实例
+│   ├── assets/          静态资源（参与打包）
+│   ├── components/      公共组件
+│   │   ├── base/        基础 UI 组件
+│   │   └── business/    业务组件
+│   ├── composables/     组合式函数 / Hooks
+│   ├── constants/       常量定义
+│   ├── pages/           页面组件
+│   ├── router/          路由配置
+│   ├── store/           状态管理
+│   ├── styles/          全局样式
+│   ├── types/           TypeScript 类型
+│   └── utils/           工具函数
+├── .env                 环境变量
+├── .eslintrc.cjs
+├── .prettierrc
+├── tsconfig.json
+├── vite.config.ts
+└── package.json</code></pre>
+</div>
+
+<h3>10.2 目录职责</h3>
+<table>
+  <tr><th>目录</th><th>职责</th><th>约束</th></tr>
+  <tr><td><code>api/</code></td><td>接口定义与请求封装</td><td>按模块拆分，统一错误处理</td></tr>
+  <tr><td><code>components/</code></td><td>可复用组件</td><td>禁止包含业务逻辑</td></tr>
+  <tr><td><code>pages/</code></td><td>页面级组件</td><td>每个页面对应一个路由</td></tr>
+  <tr><td><code>composables/</code></td><td>跨页面复用的组合逻辑</td><td>以 <code>use</code> 开头命名</td></tr>
+  <tr><td><code>router/</code></td><td>路由定义与守卫</td><td>使用懒加载</td></tr>
+  <tr><td><code>store/</code></td><td>全局状态管理</td><td>按模块拆分</td></tr>
+  <tr><td><code>styles/</code></td><td>全局样式、变量</td><td>不放组件级样式</td></tr>
+  <tr><td><code>types/</code></td><td>公共类型定义</td><td>与业务类型分离</td></tr>
+  <tr><td><code>utils/</code></td><td>纯工具函数</td><td>无副作用</td></tr>
+</table>
+
+<h3>10.3 按功能组织（Feature-based）</h3>
+<p>对于业务复杂的项目，推荐按功能模块而非文件类型组织代码。每个 feature 目录内包含该功能的所有相关文件。</p>
+<div class="code-block">
+  <div class="lang">Directory Tree</div>
+<pre><code>src/features/
+├── user/
+│   ├── components/     UserCard.tsx, UserList.tsx
+│   ├── hooks/          useUserList.ts
+│   ├── api/            userApi.ts
+│   └── types/          user.ts
+├── order/
+│   ├── components/     OrderTable.tsx
+│   ├── hooks/          useOrderFilter.ts
+│   └── api/            orderApi.ts
+└── shared/             跨 feature 的公共代码</code></pre>
+</div>
+
+<div class="note">
+  页面路由与文件路径保持对应：<code>/pages/user/profile.tsx</code> → <code>/user/profile</code>。这样看到 URL 就知道去哪个文件改代码。
+</div>
+
+<!-- ============================================================
+     Ch11: Git 协作
+     ============================================================ -->
+<h2 id="ch11">十一、Git 协作</h2>
+
+<p>Git 是团队协作的骨架。分支混乱、commit message 随意，会让代码历史变得不可追溯。花几分钟写好 commit message，比三个月后翻 Git log 猜当时做了什么划算得多。</p>
+
+<h3>11.1 分支管理</h3>
+<table>
+  <tr><th>分支</th><th>命名</th><th>说明</th></tr>
+  <tr><td>主分支</td><td><code>main</code></td><td>生产代码，禁止直接提交</td></tr>
+  <tr><td>开发分支</td><td><code>develop</code></td><td>开发主线</td></tr>
+  <tr><td>功能分支</td><td><code>feat/xxx</code></td><td>新功能开发</td></tr>
+  <tr><td>修复分支</td><td><code>fix/xxx</code></td><td>Bug 修复</td></tr>
+  <tr><td>发布分支</td><td><code>release/x.x.x</code></td><td>版本发布准备</td></tr>
+  <tr><td>热修复</td><td><code>hotfix/x.x.x</code></td><td>生产紧急修复</td></tr>
+</table>
+
+<h3>11.2 Commit Message</h3>
+<p>采用 Conventional Commits 格式：<code>&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;</code></p>
+
+<div class="code-block">
+  <div class="lang">Git</div>
+<pre><code><span class="kw">feat</span>(user): 添加用户登录功能
+<span class="kw">fix</span>(order): 修复订单金额计算错误
+<span class="kw">docs</span>(readme): 更新启动说明
+<span class="kw">refactor</span>(api): 重构请求拦截器
+<span class="kw">perf</span>(list): 优化列表渲染性能
+<span class="kw">chore</span>(deps): 升级依赖版本</code></pre>
+</div>
+
+<table>
+  <tr><th>Type</th><th>说明</th></tr>
+  <tr><td><code>feat</code></td><td>新功能</td></tr>
+  <tr><td><code>fix</code></td><td>Bug 修复</td></tr>
+  <tr><td><code>docs</code></td><td>文档变更</td></tr>
+  <tr><td><code>style</code></td><td>代码格式</td></tr>
+  <tr><td><code>refactor</code></td><td>代码重构</td></tr>
+  <tr><td><code>perf</code></td><td>性能优化</td></tr>
+  <tr><td><code>test</code></td><td>测试相关</td></tr>
+  <tr><td><code>chore</code></td><td>构建/工具/依赖</td></tr>
+</table>
+
+<div class="note">
+  合并分支使用 <code>git merge --no-ff</code> 保留历史。合并完成后删除已合并的分支。
+</div>
+
+<h3>11.3 MR/PR 与 Code Review</h3>
+<table>
+  <tr><th>项</th><th>要求</th></tr>
+  <tr><td>MR 标题</td><td>与 Commit Message 格式一致：<code>feat(user): 添加登录功能</code></td></tr>
+  <tr><td>MR 描述</td><td>写清楚做了什么、为什么这样做、如何测试</td></tr>
+  <tr><td>关联 Issue</td><td>必须关联对应的任务或 Bug 编号</td></tr>
+  <tr><td>Review 人数</td><td>至少 1 人 Review 通过后才能合并</td></tr>
+  <tr><td>冲突解决</td><td>谁拉的分支谁负责解决冲突，解决后重新请求 Review</td></tr>
+</table>
+
+<h3>11.4 Rebase vs Merge</h3>
+<table>
+  <tr><th>场景</th><th>策略</th></tr>
+  <tr><td>同步主分支最新代码到功能分支</td><td>用 <code>rebase</code>，保持提交历史线性</td></tr>
+  <tr><td>功能分支合并到主分支</td><td>用 <code>merge --no-ff</code>，保留分支轨迹</td></tr>
+  <tr><td>已推送到远程的分支</td><td>禁止 rebase，会破坏其他人的历史</td></tr>
+</table>
+
+<div class="note">
+  <strong>.gitignore 必须包含：</strong><code>node_modules/</code> <code>.env.local</code> <code>dist/</code> <code>.DS_Store</code> <code>*.log</code> <code>.vscode/</code>（团队统一配置除外）。
+</div>
+
+<!-- ============================================================
+     Ch12: 工程化配置
+     ============================================================ -->
+<h2 id="ch12">十二、工程化配置</h2>
+
+<p>工具配置的核心原则：<strong>交给机器做的事，不要让人来纠结</strong>。缩进、分号、引号这些格式问题不应该出现在 Code Review 讨论中——Prettier 和 ESLint 应该在你保存文件时就自动处理好了。</p>
+
+<h3>12.1 Prettier</h3>
+<div class="code-block">
+  <div class="lang">JSON — .prettierrc</div>
+<pre><code>{
+  <span class="pp">"semi"</span>: <span class="kw">true</span>,
+  <span class="pp">"singleQuote"</span>: <span class="kw">true</span>,
+  <span class="pp">"trailingComma"</span>: <span class="str">"es5"</span>,
+  <span class="pp">"tabWidth"</span>: <span class="num">2</span>,
+  <span class="pp">"useTabs"</span>: <span class="kw">false</span>,
+  <span class="pp">"printWidth"</span>: <span class="num">100</span>,
+  <span class="pp">"bracketSpacing"</span>: <span class="kw">true</span>,
+  <span class="pp">"arrowParens"</span>: <span class="str">"always"</span>,
+  <span class="pp">"endOfLine"</span>: <span class="str">"lf"</span>
+}</code></pre>
+</div>
+
+<h3>12.2 Git Hooks</h3>
+<div class="code-block">
+  <div class="lang">JSON — package.json (lint-staged)</div>
+<pre><code>{
+  <span class="pp">"lint-staged"</span>: {
+    <span class="pp">"*.{js,ts,jsx,tsx,vue}"</span>: [
+      <span class="str">"eslint --fix"</span>,
+      <span class="str">"prettier --write"</span>
+    ],
+    <span class="pp">"*.{css,scss}"</span>: [
+      <span class="str">"stylelint --fix"</span>,
+      <span class="str">"prettier --write"</span>
+    ]
+  }
+}</code></pre>
+</div>
+
+<h3>12.3 环境变量</h3>
+<table>
+  <tr><th>文件</th><th>用途</th></tr>
+  <tr><td><code>.env</code></td><td>所有环境共享</td></tr>
+  <tr><td><code>.env.development</code></td><td>开发环境</td></tr>
+  <tr><td><code>.env.test</code></td><td>测试环境</td></tr>
+  <tr><td><code>.env.production</code></td><td>生产环境</td></tr>
+  <tr><td><code>.env.local</code></td><td>本地覆盖（不提交 Git）</td></tr>
+</table>
+
+<div class="note">
+  敏感信息（API Key、密钥）禁止出现在前端环境变量或代码中。所有敏感操作在服务端完成。
+</div>
+
+<h3>12.4 工程化补充</h3>
+<table>
+  <tr><th>项</th><th>要求</th></tr>
+  <tr><td>包管理器</td><td>统一使用 pnpm；lock 文件（<code>pnpm-lock.yaml</code>）必须提交到 Git</td></tr>
+  <tr><td>browserslist</td><td>在 <code>package.json</code> 中明确目标浏览器范围，避免生成不必要的 polyfill</td></tr>
+  <tr><td>.editorconfig</td><td>项目根目录放置 <code>.editorconfig</code>，统一缩进、换行符、字符编码</td></tr>
+  <tr><td>路径别名</td><td>配置 <code>@/</code> 指向 <code>src/</code>，避免深层相对路径 <code>../../../</code></td></tr>
+  <tr><td>npm scripts</td><td><code>dev</code> <code>build</code> <code>lint</code> <code>type-check</code> 作为标准命令名，不自定义</td></tr>
+</table>
+
+<!-- ============================================================
+     Ch13: 接口规范
+     ============================================================ -->
+<h2 id="ch13">十三、接口规范</h2>
+
+<p>别在每个页面里直接调用 <code>axios.get()</code>。把接口调用统一封装成模块，好处有三：Token 添加、错误处理、baseURL 配置全在一处搞定，不用到处重复；接口签名有 TypeScript 类型提示；后端换接口地址时只改一个地方。</p>
+
+<h3>13.1 请求封装</h3>
+<div class="code-block">
+  <div class="lang">TypeScript</div>
+<pre><code><span class="kw">import</span> <span class="pl">axios</span> <span class="kw">from</span> <span class="str">'axios'</span>;
+
+<span class="kw">const</span> <span class="pl">request</span> = <span class="pl">axios</span>.<span class="fn">create</span>({
+  <span class="pl">baseURL</span>: <span class="kw">import</span>.<span class="pl">meta</span>.<span class="pl">env</span>.<span class="pl">VITE_API_BASE_URL</span>,
+  <span class="pl">timeout</span>: <span class="num">10000</span>,
+});
+
+<span class="cm">// 请求拦截：统一添加 token</span>
+<span class="pl">request</span>.<span class="pl">interceptors</span>.<span class="pl">request</span>.<span class="fn">use</span>((<span class="pl">config</span>) => {
+  <span class="kw">const</span> <span class="pl">token</span> = <span class="fn">getToken</span>();
+  <span class="kw">if</span> (token) {
+    <span class="pl">config</span>.<span class="pl">headers</span>.<span class="pl">Authorization</span> = <span class="str">`Bearer </span><span class="kw">${</span><span class="pl">token</span><span class="kw">}</span><span class="str">`</span>;
+  }
+  <span class="kw">return</span> config;
+});
+
+<span class="cm">// 响应拦截：统一错误处理</span>
+<span class="pl">request</span>.<span class="pl">interceptors</span>.<span class="pl">response</span>.<span class="fn">use</span>(
+  (<span class="pl">res</span>) => <span class="pl">res</span>.<span class="pl">data</span>,
+  (<span class="pl">err</span>) => {
+    <span class="fn">handleError</span>(err);
+    <span class="kw">return</span> <span class="ty">Promise</span>.<span class="fn">reject</span>(err);
+  }
+);
+
+<span class="kw">export</span> <span class="kw">default</span> request;</code></pre>
+</div>
+
+<h3>13.2 API 模块</h3>
+<div class="code-block">
+  <div class="lang">TypeScript</div>
+<pre><code><span class="cm">// api/modules/user.ts</span>
+<span class="kw">import</span> <span class="pl">request</span> <span class="kw">from</span> <span class="str">'../request'</span>;
+<span class="kw">import</span> <span class="kw">type</span> { <span class="ty">User</span>, <span class="ty">LoginParams</span>, <span class="ty">ApiResponse</span> } <span class="kw">from</span> <span class="str">'@/types'</span>;
+
+<span class="kw">export</span> <span class="kw">const</span> <span class="pl">userApi</span> = {
+  <span class="fn">login</span>(<span class="pl">params</span>: <span class="ty">LoginParams</span>) {
+    <span class="kw">return</span> <span class="pl">request</span>.<span class="fn">post</span>&lt;<span class="ty">ApiResponse</span>&lt;{ <span class="pl">token</span>: <span class="ty">string</span> }&gt;&gt;(<span class="str">'/auth/login'</span>, params);
+  },
+  <span class="fn">getUserInfo</span>(<span class="pl">userId</span>: <span class="ty">string</span>) {
+    <span class="kw">return</span> <span class="pl">request</span>.<span class="fn">get</span>&lt;<span class="ty">ApiResponse</span>&lt;<span class="ty">User</span>&gt;&gt;(<span class="str">`/users/</span><span class="kw">${</span><span class="pl">userId</span><span class="kw">}</span><span class="str">`</span>);
+  },
+};</code></pre>
+</div>
+
+<h3>13.3 状态分层</h3>
+<table>
+  <tr><th>层级</th><th>示例</th><th>方案</th></tr>
+  <tr><td>UI 状态</td><td>开关、表单输入</td><td>组件内 <code>ref</code> / <code>useState</code></td></tr>
+  <tr><td>服务端缓存</td><td>API 返回数据</td><td>VueUse / React Query / SWR</td></tr>
+  <tr><td>全局状态</td><td>认证、主题</td><td>Pinia / Zustand / Redux Toolkit</td></tr>
+</table>
+
+<h3>13.4 请求取消与缓存</h3>
+<table>
+  <tr><th>项</th><th>要求</th></tr>
+  <tr><td>请求取消</td><td>组件卸载时必须取消未完成的请求，使用 <code>AbortController</code> 或框架内置机制</td></tr>
+  <tr><td>重试策略</td><td>网络错误自动重试 2-3 次，间隔采用指数退避（1s → 2s → 4s）</td></tr>
+  <tr><td>请求去重</td><td>短时间内相同请求自动去重，避免用户快速点击导致重复提交</td></tr>
+  <tr><td>缓存策略</td><td>优先使用 stale-while-revalidate 模式：先返回缓存数据，后台更新</td></tr>
+  <tr><td>接口版本</td><td>API 路径包含版本号 <code>/v1/users</code>，后端版本升级时前端同步切换</td></tr>
+</table>
+
+<!-- ============================================================
+     Ch14: 安全规范
+     ============================================================ -->
+<h2 id="ch14">十四、安全规范</h2>
+
+<p>前端安全问题一旦出事故就是大事——XSS 可以窃取用户 Token，敏感信息泄露可能导致服务器被入侵。这些规则不是可选项，违反任何一条 Code Review 直接打回。</p>
+
+<h3>14.1 XSS 防护</h3>
+<div class="compare">
+  <div class="bad">
+    <div class="label">危险</div>
+<pre><code><span class="cm">// 直接插入 HTML</span>
+<span class="pl">el</span>.<span class="pl">innerHTML</span> = <span class="pl">userInput</span>;
+
+<span class="cm">// Vue: v-html</span>
+<span class="nt">&lt;div</span> <span class="na">v-html=</span><span class="s">"userInput"</span><span class="nt">/&gt;</span>
+
+<span class="cm">// React: dangerouslySetInnerHTML</span></code></pre>
+  </div>
+  <div class="good">
+    <div class="label">安全</div>
+<pre><code><span class="cm">// 安全插入文本</span>
+<span class="pl">el</span>.<span class="pl">textContent</span> = <span class="pl">userInput</span>;
+
+<span class="cm">// 使用 DOMPurify</span>
+<span class="kw">import</span> <span class="ty">DOMPurify</span> <span class="kw">from</span> <span class="str">'dompurify'</span>;
+<span class="kw">const</span> <span class="pl">clean</span> = <span class="ty">DOMPurify</span>.<span class="fn">sanitize</span>(<span class="pl">input</span>);
+<span class="pl">el</span>.<span class="pl">innerHTML</span> = <span class="pl">clean</span>;</code></pre>
+  </div>
+</div>
+
+<h3>14.2 安全清单</h3>
+<table>
+  <tr><th style="width:22%">项</th><th>要求</th></tr>
+  <tr><td>XSS</td><td>避免 <code>innerHTML</code> / <code>v-html</code>，必要时用 DOMPurify</td></tr>
+  <tr><td>HTTPS</td><td>生产环境强制 HTTPS，所有 API 用 HTTPS</td></tr>
+  <tr><td>敏感信息</td><td>禁止在前端硬编码密钥、密码</td></tr>
+  <tr><td>URL 参数</td><td>传递时用 <code>encodeURIComponent</code> 编码</td></tr>
+  <tr><td>依赖审计</td><td>定期执行 <code>npm audit</code></td></tr>
+  <tr><td>CSP</td><td>配置 Content Security Policy 头</td></tr>
+  <tr><td>Token 存储</td><td>Token 存 HttpOnly Cookie，禁止存 localStorage（防 XSS 窃取）</td></tr>
+  <tr><td>iframe 安全</td><td>嵌入外部页面必须加 <code>sandbox</code> 属性，限制权限</td></tr>
+  <tr><td>依赖扫描</td><td><code>npm audit</code> 或 Snyk 集成到 CI，高危漏洞阻断发布</td></tr>
+  <tr><td>输入校验</td><td>前端做格式校验提升体验，后端做安全校验拦截攻击——两者缺一不可</td></tr>
+</table>
+
+<!-- ============================================================
+     Ch15: 性能规范
+     ============================================================ -->
+<h2 id="ch15">十五、性能规范</h2>
+
+<p>性能优化不用过度追求——首屏加载在 2 秒以内、交互响应在 100ms 以内，对大部分项目就够了。关键是养成好习惯：不引入 500KB 的库只为了用一个函数，不把整个页面打包到一个 JS 文件里。</p>
+
+<h3>15.1 代码优化</h3>
+<div class="code-block">
+  <div class="lang">TypeScript</div>
+<pre><code><span class="cm">// 路由懒加载</span>
+<span class="kw">const</span> <span class="pl">routes</span> = [{
+  <span class="pl">path</span>: <span class="str">'/dashboard'</span>,
+  <span class="pl">component</span>: () => <span class="fn">import</span>(<span class="str">'@/pages/Dashboard.vue'</span>),
+}];
+
+<span class="cm">// 按需引入</span>
+<span class="kw">import</span> { <span class="pl">debounce</span> } <span class="kw">from</span> <span class="str">'lodash-es'</span>;  <span class="cm">// 而非 import _ from 'lodash'</span>
+
+<span class="cm">// 图片懒加载</span>
+<span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"image.jpg"</span> <span class="na">loading=</span><span class="s">"lazy"</span> <span class="nt">/&gt;</span>
+
+<span class="cm">// 使用 WebP</span>
+<span class="nt">&lt;picture&gt;</span>
+  <span class="nt">&lt;source</span> <span class="na">srcset=</span><span class="s">"img.webp"</span> <span class="na">type=</span><span class="s">"image/webp"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"img.jpg"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/picture&gt;</span></code></pre>
+</div>
+
+<h3>15.2 优化清单</h3>
+<table>
+  <tr><th>方向</th><th>措施</th></tr>
+  <tr><td>代码分割</td><td>路由级懒加载、组件动态导入</td></tr>
+  <tr><td>图片优化</td><td>WebP/AVIF、懒加载、<code>srcset</code></td></tr>
+  <tr><td>缓存</td><td>API 数据缓存、静态资源强缓存</td></tr>
+  <tr><td>减少重渲染</td><td><code>useMemo</code> / <code>computed</code>、<code>useCallback</code></td></tr>
+  <tr><td>打包优化</td><td>Tree Shaking、按需引入</td></tr>
+  <tr><td>长列表</td><td>虚拟滚动</td></tr>
+</table>
+
+<h3>15.3 性能指标与监控</h3>
+<p>以下为 Google Core Web Vitals 推荐阈值，新页面应在 CI 中自动检查：</p>
+<table>
+  <tr><th>指标</th><th>目标</th><th>说明</th></tr>
+  <tr><td>LCP</td><td>≤ 2.5s</td><td>最大内容绘制：页面主要内容加载完成的时间</td></tr>
+  <tr><td>INP</td><td>≤ 200ms</td><td>交互到下次绘制：用户操作到页面响应的延迟</td></tr>
+  <tr><td>CLS</td><td>≤ 0.1</td><td>累积布局偏移：页面加载过程中视觉稳定性的评分</td></tr>
+</table>
+
+<h3>15.4 资源加载策略</h3>
+<table>
+  <tr><th>资源</th><th>策略</th></tr>
+  <tr><td>关键 CSS</td><td>内联到 <code>&lt;head&gt;</code>，非关键 CSS 延迟加载</td></tr>
+  <tr><td>关键 JS</td><td>异步加载（<code>async</code>），不阻塞渲染</td></tr>
+  <tr><td>Hero 图片</td><td><code>fetchpriority="high"</code> 提前加载</td></tr>
+  <tr><td>字体文件</td><td><code>font-display: swap</code> + <code>preload</code> + 子集化</td></tr>
+  <tr><td>第三方脚本</td><td>异步加载、按需加载、设置性能预算（超过 50KB 需审批）</td></tr>
+</table>
+
+<h3>15.5 Bundle 分析</h3>
+<p>每次大版本发布前运行 bundle 分析工具，检查是否有意外引入的大依赖包。</p>
+<div class="code-block">
+  <div class="lang">Shell</div>
+<pre><code><span class="cm"># Vite 项目</span>
+npx vite-bundle-visualizer
+
+<span class="cm"># Webpack 项目</span>
+npm install --save-dev webpack-bundle-analyzer
+npx webpack-bundle-analyzer dist/stats.json
+
+<span class="cm"># 在线工具 — 引入新依赖前检查体积</span>
+<span class="cm"># bundlephobia.com</span></code></pre>
+</div>
+
+<div class="footer">
+  本文档综合参考阿里巴巴前端规约、Airbnb Style Guide、Google Style Guide、Vue.js 风格指南等编写。
+  <br>v2.0 · 2026-05 · 团队内部文档
+</div>
+
+</main>
+
+<script>
+(function() {
+  var links = document.querySelectorAll('.sidebar a');
+  var sections = [];
+  links.forEach(function(a) {
+    var id = a.getAttribute('href');
+    if (id && id !== '#cover') {
+      var el = document.querySelector(id);
+      if (el) sections.push({ el: el, link: a });
+    }
+  });
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        links.forEach(function(l) { l.classList.remove('active'); });
+        var match = sections.find(function(s) { return s.el === e.target; });
+        if (match) match.link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-60px 0px -70% 0px' });
+
+  sections.forEach(function(s) { observer.observe(s.el); });
+})();
+</script>
+
+</div><!-- .layout -->
+
+</body>
+</html>
